@@ -8,8 +8,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.sql.Timestamp;
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 @Getter
 @MappedSuperclass
@@ -17,18 +16,24 @@ import java.util.UUID;
 public class BaseEntity {
     @CreatedDate
     @Column(updatable = false)
-    private Timestamp createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime createdAt;
 
     @CreatedBy
-    private UUID createdBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User createdBy;
 
     @LastModifiedDate
-    private Timestamp updateAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime updateAt;
 
     @LastModifiedBy
-    private UUID updateBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User updateBy;
 
-    private Timestamp deleteAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private LocalDateTime deleteAt;
 
-    private UUID deleteBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User deleteBy;
 }

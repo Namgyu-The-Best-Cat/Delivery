@@ -16,7 +16,7 @@ import java.util.UUID;
 public class AiLog extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     private String reqText;
