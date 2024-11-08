@@ -6,11 +6,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
 
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -20,6 +22,10 @@ import lombok.NoArgsConstructor;
 @Entity(name = "p_user")
 public class User extends BaseEntity {
     @Id
+    @UuidGenerator
+    private UUID id;
+
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
