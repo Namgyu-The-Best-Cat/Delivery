@@ -25,6 +25,7 @@ public class User extends BaseEntity {
     @UuidGenerator
     private UUID id;
 
+
     @Column(nullable = false, unique = true)
     private String username;
 
