@@ -2,6 +2,9 @@ package com.bestcat.delivery.category.entity;
 
 import com.bestcat.delivery.store.entity.StoreCategory;
 import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
