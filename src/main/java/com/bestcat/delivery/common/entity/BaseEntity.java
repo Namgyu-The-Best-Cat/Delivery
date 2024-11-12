@@ -31,4 +31,9 @@ public class BaseEntity {
     private Timestamp deleteAt;
 
     private UUID deleteBy;
+
+    public void delete(UUID userId){
+        this.deleteAt = new Timestamp(System.currentTimeMillis());
+        this.deleteBy = userId;
+    }
 }

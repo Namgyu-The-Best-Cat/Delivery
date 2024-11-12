@@ -1,8 +1,10 @@
 package com.bestcat.delivery.review.entity;
 
 import com.bestcat.delivery.common.entity.BaseEntity;
+import com.bestcat.delivery.review.dto.ReviewRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
@@ -15,24 +17,26 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @Column(name = "order_id")
     private Order order;
 
     private String content;
     private Integer rating;
 
-    private Timestamp delete_at;
-    @ManyToOne
-    private User delete_by;
+    public void update(ReviewRequestDto requestDto){
+        this.content = requestDto.content();
+        this.rating = requestDto.rating();
+    }
 }
