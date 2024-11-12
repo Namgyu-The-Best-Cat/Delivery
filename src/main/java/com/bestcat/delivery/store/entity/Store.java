@@ -2,6 +2,7 @@ package com.bestcat.delivery.store.entity;
 
 import com.bestcat.delivery.area.entity.Area;
 import com.bestcat.delivery.category.entity.Category;
+import com.bestcat.delivery.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Store {
+public class Store extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -1,5 +1,6 @@
 package com.bestcat.delivery.category.entity;
 
+import com.bestcat.delivery.common.entity.BaseEntity;
 import com.bestcat.delivery.store.entity.StoreCategory;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
@@ -19,7 +20,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category {
+public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

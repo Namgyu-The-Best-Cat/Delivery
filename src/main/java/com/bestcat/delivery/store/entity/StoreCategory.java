@@ -1,6 +1,7 @@
 package com.bestcat.delivery.store.entity;
 
 import com.bestcat.delivery.category.entity.Category;
+import com.bestcat.delivery.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StoreCategory {
+public class StoreCategory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +30,5 @@ public class StoreCategory {
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
-
-    private LocalDate createdDate;
 
 }
