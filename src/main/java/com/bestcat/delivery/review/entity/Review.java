@@ -32,7 +32,8 @@ public class Review extends BaseEntity {
     private String content;
     private Integer rating;
 
-    private Timestamp delete_at;
-    @ManyToOne
-    private User delete_by;
+//    private Timestamp delete_at;
+//
+//    @ManyToOne
+//    private User delete_by;
 }
