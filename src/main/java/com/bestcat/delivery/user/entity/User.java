@@ -1,6 +1,6 @@
 package com.bestcat.delivery.user.entity;
 
-import com.bestcat.delivery.global.entity.BaseEntity;
+import com.bestcat.delivery.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,7 +14,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UuidGenerator;
 
 @EqualsAndHashCode(callSuper = true)
 @Builder
