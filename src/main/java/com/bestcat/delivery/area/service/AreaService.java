@@ -1,5 +1,6 @@
 package com.bestcat.delivery.area.service;
 
+import com.bestcat.delivery.area.dto.AreaRequestDto;
 import com.bestcat.delivery.area.dto.AreaResponseDto;
 import com.bestcat.delivery.area.entity.Area;
 import com.bestcat.delivery.area.repository.AreaRepository;
@@ -35,5 +36,9 @@ public class AreaService {
             areaResponseDtoList.add(new AreaResponseDto(area));
         }
         return areaResponseDtoList;
+    }
+
+    public void addArea(AreaRequestDto areaRequestDto) {
+
     }
 }

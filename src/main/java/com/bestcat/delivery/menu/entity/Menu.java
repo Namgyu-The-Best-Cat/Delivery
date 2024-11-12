@@ -1,8 +1,6 @@
 package com.bestcat.delivery.menu.entity;
 
-import com.bestcat.delivery.category.entity.Category;
 import com.bestcat.delivery.common.entity.BaseEntity;
-import com.bestcat.delivery.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

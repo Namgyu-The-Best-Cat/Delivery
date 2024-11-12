@@ -28,4 +28,9 @@ public class AreaController {
     public List<AreaResponseDto> getAreasByCity(@PathVariable String city) {
         return areaService.findByCity(city);
     }
+
+    @PostMapping("/areas")
+    public void addArea(@RequestBody AreaRequestDto areaRequestDto) {
+        areaService.addArea(areaRequestDto);
+    }
 }
