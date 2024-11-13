@@ -19,8 +19,8 @@ import java.util.UUID;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
+//    private final UserRepository userRepository;
+//    private final OrderRepository orderRepository;
 
     @Transactional(readOnly = true)
     public Page<ReviewResponseDto> getStoreReview(String storeId, int page, int limit, String sortBy, boolean isAsc) {
@@ -52,8 +52,8 @@ public class ReviewService {
 
     public ReviewResponseDto createReview(ReviewRequestDto requestDto, UUID userId) {
         Review review = Review.builder()
-                .user(userRepository.findById(userId))
-                .order(orderRepository.findById(requestDto.orderId()))
+//                .user(userRepository.findById(userId))
+//                .order(orderRepository.findById(requestDto.orderId()))
                 .content(requestDto.content())
                 .rating(requestDto.rating())
                 .build();
@@ -63,12 +63,14 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseDto updateReview(UUID id, ReviewRequestDto requestDto) {
+    public ReviewResponseDto updateReview(UUID id, ReviewRequestDto requestDto, UUID userId) {
 
         if (requestDto.content().isEmpty()) throw new IllegalArgumentException("본문이 비어있습니다. 리뷰 내용을 입력해주세요.");
 
         Review review = reviewRepository.findById(id).orElseThrow(() ->
                 new NullPointerException("해당 리뷰를 찾을 수 없습니다."));
+
+        if ( review.getUser().getId().equals(userId) ) throw new IllegalArgumentException("수정 권한이 없습니다.");
 
         review.update(requestDto);
         reviewRepository.save(review);
@@ -80,7 +82,7 @@ public class ReviewService {
         Review review = reviewRepository.findById(id).orElseThrow(() ->
                 new NullPointerException("해당 리뷰를 찾을 수 없습니다."));
 
-        if( !review.getUser().getUserId().equals(userId) ) throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        if( !review.getUser().getId().equals(userId) ) throw new IllegalArgumentException("삭제 권한이 없습니다.");
 
         review.delete(id);
         reviewRepository.save(review);

@@ -3,6 +3,7 @@ package com.bestcat.delivery.review.web;
 import com.bestcat.delivery.review.dto.ReviewResponseDto;
 import com.bestcat.delivery.review.dto.ReviewRequestDto;
 import com.bestcat.delivery.review.service.ReviewService;
+import com.bestcat.delivery.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class ReviewApiController {
 
     @PostMapping(value = "/review", consumes = "multipart/form-data")
     public ReviewResponseDto createReview(@ModelAttribute ReviewRequestDto requestDto
-            , @AuthenticationPrincipal UserDetailsImpl userDetails){
+            /*, @AuthenticationPrincipal UserDetailsImpl userDetails*/){
 
         // TODO 파일 업로드 서비스 로직
 
@@ -45,18 +46,18 @@ public class ReviewApiController {
 
     @PutMapping(value = "/review/{id}", consumes = "multipart/form-data")
     public ReviewResponseDto updateReview(@PathVariable UUID id, @ModelAttribute ReviewRequestDto requestDto
-            , @AuthenticationPrincipal UserDetailsImpl userDetails){
+            /*, @AuthenticationPrincipal UserDetailsImpl userDetails*/){
 
         // TODO 파일 업로드 서비스 로직
 
-        return reviewService.updateReview(id, requestDto, userDetails.getUser());
+        return reviewService.updateReview(id, requestDto, /*userDetails.getUser()*/ new User().getId());
     }
 
     @DeleteMapping("/review/{id}")
     public ReviewResponseDto deleteReview(@PathVariable UUID id
-            , @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            /*, @AuthenticationPrincipal UserDetailsImpl userDetails*/) {
 
-        return reviewService.deleteReview(id, userDetails.getUser());
+        return reviewService.deleteReview(id, /*userDetails.getUser()*/ new User().getId());
     }
 
 }
