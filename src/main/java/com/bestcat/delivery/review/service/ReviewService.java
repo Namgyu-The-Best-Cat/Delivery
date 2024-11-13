@@ -50,9 +50,9 @@ public class ReviewService {
         return reviewList.map(ReviewResponseDto::new);
     }
 
-    public ReviewResponseDto createReview(ReviewRequestDto requestDto/*, UUID userId*/) {
+    public ReviewResponseDto createReview(ReviewRequestDto requestDto, UUID userId) {
         Review review = Review.builder()
-//                .user(userRepository.findById(userId))
+                .user(userRepository.findById(userId))
                 .order(orderRepository.findById(requestDto.orderId()))
                 .content(requestDto.content())
                 .rating(requestDto.rating())
@@ -75,12 +75,14 @@ public class ReviewService {
         return new ReviewResponseDto(review);
     }
 
-    public ReviewResponseDto deleteReview(UUID id/*, UUID userId*/) {
+    public ReviewResponseDto deleteReview(UUID id, UUID userId) {
 
         Review review = reviewRepository.findById(id).orElseThrow(() ->
                 new NullPointerException("해당 리뷰를 찾을 수 없습니다."));
 
-        review.delete(userId);
+        if( !review.getUser().getUserId().equals(userId) ) throw new IllegalArgumentException("삭제 권한이 없습니다.");
+
+        review.delete(id);
         reviewRepository.save(review);
         return new ReviewResponseDto(review);
     }

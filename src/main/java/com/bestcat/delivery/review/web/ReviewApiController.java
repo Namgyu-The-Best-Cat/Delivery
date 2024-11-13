@@ -36,27 +36,27 @@ public class ReviewApiController {
 
     @PostMapping(value = "/review", consumes = "multipart/form-data")
     public ReviewResponseDto createReview(@ModelAttribute ReviewRequestDto requestDto
-            /*, @AuthenticationPrincipal UserDetailsImpl userDetails*/){
+            , @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         // TODO 파일 업로드 서비스 로직
 
-        return reviewService.createReview(requestDto/*, userDetails.getUser()*/);
+        return reviewService.createReview(requestDto, userDetails.getUser());
     }
 
     @PutMapping(value = "/review/{}", consumes = "multipart/form-data")
     public ReviewResponseDto updateReview(@PathVariable UUID id, @ModelAttribute ReviewRequestDto requestDto
-            /*, @AuthenticationPrincipal UserDetailsImpl userDetails*/){
+            , @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         // TODO 파일 업로드 서비스 로직
 
-        return reviewService.updateReview(id, requestDto/*, userDetails.getUser()*/);
+        return reviewService.updateReview(id, requestDto, userDetails.getUser());
     }
 
     @DeleteMapping("/review/{}")
     public ReviewResponseDto deleteReview(@PathVariable UUID id
-            /*, @AuthenticationPrincipal UserDetailsImpl userDetails*/) {
+            , @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return reviewService.deleteReview(id/*, userDetails.getUser()*/);
+        return reviewService.deleteReview(id, userDetails.getUser());
     }
 
 }
