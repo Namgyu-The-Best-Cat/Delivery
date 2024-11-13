@@ -22,11 +22,11 @@ public class Menu extends BaseEntity {
     private UUID id;
 
     @ManyToOne
-    @Column(name = "store_id")
+    @JoinColumn(name = "store_id")
     private Store store;
 
     @ManyToOne
-    @Column(name = "category_id")
+    @JoinColumn(name = "category_id")
     private Category category;
 
 
