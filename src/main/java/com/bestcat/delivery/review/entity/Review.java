@@ -2,6 +2,8 @@ package com.bestcat.delivery.review.entity;
 
 import com.bestcat.delivery.common.entity.BaseEntity;
 import com.bestcat.delivery.review.dto.ReviewRequestDto;
+import com.bestcat.delivery.user.entity.User;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,3 +42,4 @@ public class Review extends BaseEntity {
         this.rating = requestDto.rating();
     }
 }
+

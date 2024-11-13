@@ -28,6 +28,7 @@ public class Menu extends BaseEntity {
     @Column(name = "category_id")
     private Category category;
 
+
     private String name;
 
     private Integer price;
