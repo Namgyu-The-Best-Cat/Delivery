@@ -2,6 +2,7 @@ package com.bestcat.delivery.review.entity;
 
 import com.bestcat.delivery.common.entity.BaseEntity;
 import com.bestcat.delivery.user.entity.User;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,9 +27,11 @@ public class Review extends BaseEntity {
     @Column(name = "user_id")
     private User user;
 
+
 //    @ManyToOne
 //    @Column(name = "order_id")
 //    private Order order;
+
 
     private String content;
     private Integer rating;
@@ -36,3 +39,4 @@ public class Review extends BaseEntity {
     private Timestamp delete_at;
 
 }
+
