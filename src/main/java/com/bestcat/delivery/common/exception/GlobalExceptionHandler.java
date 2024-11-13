@@ -7,12 +7,16 @@ import static com.bestcat.delivery.common.type.ErrorCode.INTERNAL_SERVER_ERROR;
 import com.bestcat.delivery.common.dto.ErrorResponse;
 import com.bestcat.delivery.common.dto.ErrorResponse.ValidationError;
 import com.bestcat.delivery.common.type.ErrorCode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -43,8 +47,14 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
-        log.error("MethodArgumentNotValidException occurred ", e);
-        return handleExceptionInternal(e, BAD_REQUEST);
+        Map<String, String> errors = new HashMap<>();
+
+        // 모든 유효성 검증 오류를 가져와서 메시지를 구성
+        for (FieldError error : e.getBindingResult().getFieldErrors()) {
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
     /**
