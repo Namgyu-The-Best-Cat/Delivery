@@ -43,7 +43,7 @@ public class ReviewApiController {
         return reviewService.createReview(requestDto, userDetails.getUser());
     }
 
-    @PutMapping(value = "/review/{}", consumes = "multipart/form-data")
+    @PutMapping(value = "/review/{id}", consumes = "multipart/form-data")
     public ReviewResponseDto updateReview(@PathVariable UUID id, @ModelAttribute ReviewRequestDto requestDto
             , @AuthenticationPrincipal UserDetailsImpl userDetails){
 
@@ -52,7 +52,7 @@ public class ReviewApiController {
         return reviewService.updateReview(id, requestDto, userDetails.getUser());
     }
 
-    @DeleteMapping("/review/{}")
+    @DeleteMapping("/review/{id}")
     public ReviewResponseDto deleteReview(@PathVariable UUID id
             , @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
