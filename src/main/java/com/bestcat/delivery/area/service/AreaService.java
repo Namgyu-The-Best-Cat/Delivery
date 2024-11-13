@@ -4,10 +4,14 @@ import com.bestcat.delivery.area.dto.AreaRequestDto;
 import com.bestcat.delivery.area.dto.AreaResponseDto;
 import com.bestcat.delivery.area.entity.Area;
 import com.bestcat.delivery.area.repository.AreaRepository;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AreaService {
@@ -18,27 +22,27 @@ public class AreaService {
         this.areaRepository = areaRepository;
     }
 
-    public List<AreaResponseDto> findAllAreas(){
-        List<Area> areas = areaRepository.findAll();
-        List<AreaResponseDto> areaResponseDtoList = new ArrayList<>();
 
-        for (Area area : areas) {
-            areaResponseDtoList.add(new AreaResponseDto(area));
-        }
-        return areaResponseDtoList;
-    };
-
-    public List<AreaResponseDto> findByCity(String city) {
-        List<Area> areas = areaRepository.findByCity(city);
-        List<AreaResponseDto> areaResponseDtoList = new ArrayList<>();
-
-        for (Area area : areas) {
-            areaResponseDtoList.add(new AreaResponseDto(area));
-        }
-        return areaResponseDtoList;
+    public List<Area> findAllAreas() {
+        return areaRepository.findAll();
     }
 
-    public void addArea(AreaRequestDto areaRequestDto) {
+    public List<Area> findByCity(String city) {
+        return areaRepository.findByCity(city);
+    }
 
+    public void save(Area newArea) {
+        areaRepository.save(newArea);
+    }
+
+    @Transactional
+    public void updateArea(UUID areaId, @Valid AreaRequestDto areaRequestDto) {
+        Area updateArea = areaRepository.findByAreaId(areaId);
+        updateArea.update(areaRequestDto);
+
+    }
+
+    public void deleteArea(UUID areaId) {
+        areaRepository.deleteByAreaId(areaId);
     }
 }

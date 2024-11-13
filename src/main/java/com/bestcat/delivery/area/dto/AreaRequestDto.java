@@ -1,13 +1,19 @@
 package com.bestcat.delivery.area.dto;
 
-import lombok.Data;
+import com.bestcat.delivery.area.entity.Area;
+import org.antlr.v4.runtime.misc.NotNull;
 
-import java.util.UUID;
+public record AreaRequestDto (
+        @NotNull
+        String city,
 
-
-public class AreaRequestDto {
-
-    private String city;
-    private String areaName;
-
+        @NotNull
+        String areaName
+) {
+    public Area toEntity() {
+        return Area.builder()
+                .city(city)
+                .areaName(areaName)
+                .build();
+    }
 }

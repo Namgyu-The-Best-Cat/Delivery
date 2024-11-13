@@ -1,36 +1,55 @@
 package com.bestcat.delivery.area.web;
-
 import com.bestcat.delivery.area.dto.AreaRequestDto;
 import com.bestcat.delivery.area.dto.AreaResponseDto;
+import com.bestcat.delivery.area.entity.Area;
+import com.bestcat.delivery.area.repository.AreaRepository;
 import com.bestcat.delivery.area.service.AreaService;
-import jakarta.persistence.Column;
-import org.springframework.stereotype.Controller;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class AreaController {
 
     private final AreaService areaService;
 
-    public AreaController(AreaService areaService) {
-        this.areaService = areaService;
-    }
-
     @GetMapping("/areas")
-    public List<AreaResponseDto> getAllAreas() {
-        return areaService.findAllAreas();
-    }
+    public List<AreaResponseDto> searchAreasByCity(@RequestParam(required = false) String city) {
+        List<Area> areas;
+        if (city == null) {
+            areas = areaService.findAllAreas();
+        } else {
+            areas = areaService.findByCity(city);
+        }
 
-    @GetMapping("/areas/{city}")
-    public List<AreaResponseDto> getAreasByCity(@PathVariable String city) {
-        return areaService.findByCity(city);
+        List<AreaResponseDto> response = areas.stream()
+                .map(AreaResponseDto::from)
+                .collect(Collectors.toList());
+
+        return response;
     }
 
     @PostMapping("/areas")
-    public void addArea(@RequestBody AreaRequestDto areaRequestDto) {
-        areaService.addArea(areaRequestDto);
+    public void createArea(@Valid @RequestBody AreaRequestDto areaRequestDto) {
+        Area newArea = areaRequestDto.toEntity();
+        areaService.save(newArea);
     }
+
+    @PutMapping("/areas/{areaId}")
+    public void updateArea(@PathVariable UUID areaId, @Valid @RequestBody AreaRequestDto areaRequestDto) {
+        areaService.updateArea(areaId, areaRequestDto);
+    }
+
+    @DeleteMapping("/areas/{areaId}")
+    public void deleteArea(@PathVariable UUID areaId) {
+        areaService.deleteArea(areaId);
+    }
+
 }

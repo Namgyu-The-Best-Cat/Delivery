@@ -2,13 +2,19 @@ package com.bestcat.delivery.area.dto;
 
 import com.bestcat.delivery.area.entity.Area;
 
-public class AreaResponseDto {
+import java.util.UUID;
 
-    private String city;
-    private String areaName;
-
-    public AreaResponseDto(Area area) {
-        this.city = area.getCity();
-        this.areaName = area.getAreaName();
+public record AreaResponseDto(
+        UUID id,
+        String city,
+        String areaName
+) {
+    // Entity → DTO 변환 메서드
+    public static AreaResponseDto from(Area area) {
+        return new AreaResponseDto(
+                area.getAreaId(),
+                area.getCity(),
+                area.getAreaName()
+        );
     }
 }
