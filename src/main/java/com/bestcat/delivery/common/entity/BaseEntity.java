@@ -31,4 +31,5 @@ public class BaseEntity {
     private Timestamp deleteAt;
 
     private UUID deleteBy;
+
 }
