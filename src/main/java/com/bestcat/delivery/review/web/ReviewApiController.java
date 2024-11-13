@@ -41,7 +41,7 @@ public class ReviewApiController {
 
         // TODO 파일 업로드 서비스 로직
 
-        return reviewService.createReview(requestDto, userDetails.getUser());
+        return reviewService.createReview(requestDto, /*userDetails.getUser()*/ new User().getId());
     }
 
     @PutMapping(value = "/review/{id}", consumes = "multipart/form-data")
