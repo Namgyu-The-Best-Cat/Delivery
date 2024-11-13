@@ -3,6 +3,7 @@ package com.bestcat.delivery.store.entity;
 import com.bestcat.delivery.area.entity.Area;
 import com.bestcat.delivery.category.entity.Category;
 import com.bestcat.delivery.common.entity.BaseEntity;
+import com.bestcat.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class Store extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users owner;
+    private User owner;
 
 
     @Column(name="store_phone")

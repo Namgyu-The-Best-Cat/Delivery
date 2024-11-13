@@ -33,4 +33,3 @@ public class BaseEntity {
     private UUID deleteBy;
 
 }
-

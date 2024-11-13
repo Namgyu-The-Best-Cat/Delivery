@@ -21,7 +21,7 @@ public class ReviewPhoto extends BaseEntity {
     private UUID id;
 
     @ManyToOne
-    @Column(name = "review_id")
+    @JoinColumn(name = "review_id")
     private Review review;
 
     private String url;
