@@ -1,6 +1,8 @@
 package com.bestcat.delivery.menu.entity;
 
+import com.bestcat.delivery.category.entity.Category;
 import com.bestcat.delivery.common.entity.BaseEntity;
+import com.bestcat.delivery.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,13 +21,14 @@ public class Menu extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-//    @ManyToOne
-//    @Column(name = "store_id")
-//    private Store store;
-//
-//    @ManyToOne
-//    @Column(name = "category_id")
-//    private Category category;
+    @ManyToOne
+    @Column(name = "store_id")
+    private Store store;
+
+    @ManyToOne
+    @Column(name = "category_id")
+    private Category category;
+
 
     private String name;
 
