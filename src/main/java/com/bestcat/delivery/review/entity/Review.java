@@ -1,7 +1,7 @@
 package com.bestcat.delivery.review.entity;
 
 import com.bestcat.delivery.common.entity.BaseEntity;
-import com.bestcat.delivery.order.entity.Order;
+import com.bestcat.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,5 +33,6 @@ public class Review extends BaseEntity {
     private String content;
     private Integer rating;
 
+    private Timestamp delete_at;
 
 }
