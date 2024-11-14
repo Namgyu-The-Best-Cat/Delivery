@@ -14,6 +14,7 @@ import com.bestcat.delivery.user.dto.PasswordRequestDto;
 import com.bestcat.delivery.user.dto.SignupRequestDto;
 import com.bestcat.delivery.user.dto.UserInfoDto;
 import com.bestcat.delivery.user.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -54,9 +55,10 @@ public class UserController {
     @DeleteMapping("/{userId}")
     @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_OWNER", "ROLE_CUSTOMER"})
     public ResponseEntity<SuccessResponse<String>> deleteUser(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable UUID userId) {
+            @AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable UUID userId,
+            HttpServletResponse response) {
 
-        userService.deleteUser(userId, userDetails.getUser());
+        userService.deleteUser(userId, userDetails.getUser(), response);
         return ResponseEntity.ok(SuccessResponse.of(DELETE_USER_SUCCESS));
     }
 

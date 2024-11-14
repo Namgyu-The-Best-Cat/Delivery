@@ -13,6 +13,8 @@ import com.bestcat.delivery.user.dto.SignupRequestDto;
 import com.bestcat.delivery.user.entity.RoleType;
 import com.bestcat.delivery.user.entity.User;
 import com.bestcat.delivery.user.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +60,7 @@ public class UserService {
         return requestDto.nickname();
     }
 
-    public void deleteUser(UUID userId, User user) {
+    public void deleteUser(UUID userId, User user, HttpServletResponse response) {
         validateUserIdIfNotAdminOrManager(userId, user);
 
         User userToDelete = userRepository.findById(userId).orElseThrow(() ->
@@ -67,6 +69,13 @@ public class UserService {
         userToDelete.updateDeleted();
 
         userRepository.save(userToDelete);
+
+        if(userId.equals(user.getId())) {
+            Cookie cookie = new Cookie("Authorization", null);
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+        }
     }
 
     public void updatePassword(UUID userId, User user, PasswordRequestDto requestDto) {
