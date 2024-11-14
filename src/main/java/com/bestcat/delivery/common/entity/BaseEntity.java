@@ -37,4 +37,3 @@ public class BaseEntity {
         this.deleteBy = userId;
     }
 }
-

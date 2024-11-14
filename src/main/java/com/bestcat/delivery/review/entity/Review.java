@@ -2,8 +2,8 @@ package com.bestcat.delivery.review.entity;
 
 import com.bestcat.delivery.common.entity.BaseEntity;
 import com.bestcat.delivery.review.dto.ReviewRequestDto;
+import com.bestcat.delivery.order.entity.Order;
 import com.bestcat.delivery.user.entity.User;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,11 +27,11 @@ public class Review extends BaseEntity {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "order_id")
+    @JoinColumn(name = "order_id")
     private Order order;
 
     private String content;
