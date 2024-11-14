@@ -23,13 +23,13 @@ public class AuthController {
     @GetMapping("/check-nickname")
     public ResponseEntity<SuccessResponse<String>> checkNickname(@RequestParam(name = "nickname") String nickname) {
         return !userService.checkNickname(nickname) ? ResponseEntity.ok().body(SuccessResponse.of(NICKNAME_CAN_USE)) :
-                ResponseEntity.badRequest().body(SuccessResponse.of(NICKNAME_CANT_USE));
+                ResponseEntity.badRequest().body(SuccessResponse.of("FAIL", NICKNAME_CANT_USE));
     }
 
     @GetMapping("/check-username")
     public ResponseEntity<SuccessResponse<String>> checkUsername(@RequestParam(name = "username") String username) {
         return !userService.checkUsername(username) ? ResponseEntity.ok().body(SuccessResponse.of(USERNAME_CAN_USE)) :
-                ResponseEntity.badRequest().body(SuccessResponse.of(USERNAME_CANT_USE));
+                ResponseEntity.badRequest().body(SuccessResponse.of("FAIL", USERNAME_CANT_USE));
     }
 
 }
