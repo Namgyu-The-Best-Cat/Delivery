@@ -1,7 +1,9 @@
 package com.bestcat.delivery.order.entity;
 
+import com.bestcat.delivery.common.entity.BaseEntity;
 import com.bestcat.delivery.order.entity.type.OrderStatus;
 import com.bestcat.delivery.order.entity.type.OrderType;
+import com.bestcat.delivery.store.entity.Store;
 import com.bestcat.delivery.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Order {
+public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name ="order_id",updatable = false, nullable = false)
@@ -36,9 +38,9 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "store_id", nullable = false)
-//    private Store store;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_type", nullable = false, length = 20)
@@ -53,7 +55,5 @@ public class Order {
 
     @Column(name = "request_notes")
     private String requestNotes;
-
-    //BaseEntity
 
 }
