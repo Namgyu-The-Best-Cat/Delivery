@@ -1,5 +1,9 @@
 package com.bestcat.delivery.common.util;
 
+import static com.bestcat.delivery.common.type.ResponseMessage.SIGNIN_SUCCESS;
+
+import com.bestcat.delivery.common.dto.SuccessResponse;
+import com.bestcat.delivery.common.type.ResponseMessage;
 import com.bestcat.delivery.user.dto.SigninRequestDto;
 import com.bestcat.delivery.user.entity.RoleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +56,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         String token = jwtUtil.createToken(id, username, role);
         jwtUtil.addJwtToCookie(token, response);
+        // 로그인 성공 메시지 작성
+        SuccessResponse<ResponseMessage> successResponse = SuccessResponse.of(SIGNIN_SUCCESS);
+
+        // JSON 응답을 반환
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(new ObjectMapper().writeValueAsString(successResponse));
+        response.getWriter().flush();
     }
 
     @Override
