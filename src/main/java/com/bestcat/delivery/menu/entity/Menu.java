@@ -5,6 +5,7 @@ import com.bestcat.delivery.common.entity.BaseEntity;
 import com.bestcat.delivery.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Menu extends BaseEntity {
 
     @Id
@@ -37,4 +39,12 @@ public class Menu extends BaseEntity {
     private String photoUrl;
 
     private String description;
+
+    public void update(Category category, String name, int price, String photoUrl, String description) {
+        this.category = category;
+        this.name = name;
+        this.price = price;
+        this.photoUrl = photoUrl;
+        this.description = description;
+    }
 }
