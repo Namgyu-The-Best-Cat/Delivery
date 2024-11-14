@@ -22,6 +22,7 @@ public enum ErrorCode {
     PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     SIGN_IN_FAILED(HttpStatus.UNAUTHORIZED, "로그인에 실패했습니다"),
     NEW_PASSWORD_SAME_AS_CURRENT(HttpStatus.BAD_REQUEST, "현재 사용중인 비밀번호와 일치합니다."),
+    CANNOT_FOUND_LOGIN_USER(HttpStatus.UNAUTHORIZED, "현재 로그인 된 유저가 없습니다."),
 
 
     // area

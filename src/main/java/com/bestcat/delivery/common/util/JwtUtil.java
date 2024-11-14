@@ -65,8 +65,6 @@ public class JwtUtil {
     // 로그 설정
     private static final Logger logger = LoggerFactory.getLogger("JWT 관련 로그");
 
-    private final CustomLogoutHandler customLogoutHandler;
-
     // 여러번 요정되는 것을 방지
     @PostConstruct
     public void init() {
@@ -174,18 +172,5 @@ public class JwtUtil {
         return null;
     }
 
-    public void configureLogout(LogoutConfigurer<HttpSecurity> logout) throws AuthorizationDeniedException {
-        // 로그인 성공 메시지 작성
-        SuccessResponse<ResponseMessage> successResponse = SuccessResponse.of(LOGOUT_SUCCESS);
-        logout
-                .logoutUrl("/api/users/logout")  // 로그아웃 URL 설정
-                .addLogoutHandler(customLogoutHandler)  // 커스텀 로그아웃 핸들러 추가
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(new ObjectMapper().writeValueAsString(successResponse));
-                    response.getWriter().flush();
-                })
-                .permitAll();
-    }
+
 }
