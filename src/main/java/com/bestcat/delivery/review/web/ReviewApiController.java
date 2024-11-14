@@ -1,11 +1,12 @@
 package com.bestcat.delivery.review.web;
 
+import com.bestcat.delivery.common.util.UserDetailsImpl;
 import com.bestcat.delivery.review.dto.ReviewResponseDto;
 import com.bestcat.delivery.review.dto.ReviewRequestDto;
 import com.bestcat.delivery.review.service.ReviewService;
-import com.bestcat.delivery.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -17,7 +18,7 @@ public class ReviewApiController {
 
     private final ReviewService reviewService;
 
-    @GetMapping("/store/{storeId}/review")
+    @GetMapping("/stores/{storeId}/reviews")
     public Page<ReviewResponseDto> getStoreReview(@PathVariable("storeId") String storeId,
                                                   @RequestParam("page") int page,
                                                   @RequestParam("limit") int limit,
@@ -26,7 +27,7 @@ public class ReviewApiController {
         return reviewService.getStoreReview(storeId, page, limit, sortBy, isAsc);
     }
 
-    @GetMapping("/user/{userId}/review")
+    @GetMapping("/users/{userId}/reviews")
     public Page<ReviewResponseDto> getUserReview(@PathVariable("userId") String userId,
                                                  @RequestParam("page") int page,
                                                  @RequestParam("limit") int limit,
@@ -35,29 +36,29 @@ public class ReviewApiController {
         return reviewService.getUserReview(userId, page, limit, sortBy, isAsc);
     }
 
-    @PostMapping(value = "/review", consumes = "multipart/form-data")
+    @PostMapping(value = "/reviews", consumes = "multipart/form-data")
     public ReviewResponseDto createReview(@ModelAttribute ReviewRequestDto requestDto
-            /*, @AuthenticationPrincipal UserDetailsImpl userDetails*/){
+            , @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         // TODO 파일 업로드 서비스 로직
 
-        return reviewService.createReview(requestDto, /*userDetails.getUser()*/ new User().getId());
+        return reviewService.createReview(requestDto, userDetails.getUserId());
     }
 
-    @PutMapping(value = "/review/{id}", consumes = "multipart/form-data")
+    @PutMapping(value = "/reviews/{id}", consumes = "multipart/form-data")
     public ReviewResponseDto updateReview(@PathVariable UUID id, @ModelAttribute ReviewRequestDto requestDto
-            /*, @AuthenticationPrincipal UserDetailsImpl userDetails*/){
+            , @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         // TODO 파일 업로드 서비스 로직
 
-        return reviewService.updateReview(id, requestDto, /*userDetails.getUser()*/ new User().getId());
+        return reviewService.updateReview(id, requestDto, userDetails.getUserId());
     }
 
-    @DeleteMapping("/review/{id}")
+    @DeleteMapping("/reviews/{id}")
     public ReviewResponseDto deleteReview(@PathVariable UUID id
-            /*, @AuthenticationPrincipal UserDetailsImpl userDetails*/) {
+            , @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        return reviewService.deleteReview(id, /*userDetails.getUser()*/ new User().getId());
+        return reviewService.deleteReview(id, userDetails.getUserId());
     }
 
 }
