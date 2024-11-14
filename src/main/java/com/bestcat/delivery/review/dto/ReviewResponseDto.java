@@ -14,13 +14,15 @@ public record ReviewResponseDto(
         Timestamp createAt,
         UUID createBy
 ){
-    public ReviewResponseDto(Review review) {
-        this.id = review.getId();
-        this.username = review.getUser().getUsername();
-        this.orderId = review.getOrder().getOrderId();
-        this.content = review.getContent();
-        this.rating = review.getRating();
-        this.createAt = review.getCreatedAt();
-        this.createBy = review.getCreatedBy();
+    public static ReviewResponseDto from(Review review) {
+        return new ReviewResponseDto(
+                review.getId(),
+                review.getUser().getId(),
+                review.getOrder().getOrderId(),
+                review.getContent(),
+                review.getRating(),
+                review.getCreatedAt(),
+                review.getCreatedBy()
+        );
     }
 }

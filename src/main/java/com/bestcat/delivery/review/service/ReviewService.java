@@ -33,7 +33,7 @@ public class ReviewService {
 
         reviewList = reviewRepository.findAllByOrderStoreId(storeId, pageable);
 
-        return reviewList.map(ReviewResponseDto::new);
+        return reviewList.map(ReviewResponseDto::from);
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +47,7 @@ public class ReviewService {
 
         reviewList = reviewRepository.findAllByUserUserId(userId, pageable);
 
-        return reviewList.map(ReviewResponseDto::new);
+        return reviewList.map(ReviewResponseDto::from);
     }
 
     public ReviewResponseDto createReview(ReviewRequestDto requestDto, UUID userId) {
@@ -59,7 +59,7 @@ public class ReviewService {
                 .build();
 
         reviewRepository.save(review);
-        return new ReviewResponseDto(review);
+        return ReviewResponseDto.from(review);
     }
 
     @Transactional
@@ -74,7 +74,7 @@ public class ReviewService {
 
         review.update(requestDto);
         reviewRepository.save(review);
-        return new ReviewResponseDto(review);
+        return ReviewResponseDto.from(review);
     }
 
     public ReviewResponseDto deleteReview(UUID id, UUID userId) {
@@ -86,6 +86,6 @@ public class ReviewService {
 
         review.delete(id);
         reviewRepository.save(review);
-        return new ReviewResponseDto(review);
+        return ReviewResponseDto.from(review);
     }
 }
