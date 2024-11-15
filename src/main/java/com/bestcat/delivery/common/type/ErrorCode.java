@@ -23,7 +23,7 @@ public enum ErrorCode {
 
 
     // area
-    SERVICE_AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 지역입니다."),
+    AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 지역입니다."),
 
 
     // delivery

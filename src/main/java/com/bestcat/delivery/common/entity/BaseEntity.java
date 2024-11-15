@@ -28,8 +28,8 @@ public class BaseEntity {
     @LastModifiedBy
     private UUID updateBy;
 
-    private Timestamp deleteAt;
+    private Timestamp deletedAt;
 
-    private UUID deleteBy;
+    private UUID deletedBy;
 
 }
