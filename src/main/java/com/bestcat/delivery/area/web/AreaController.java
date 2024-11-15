@@ -21,25 +21,15 @@ public class AreaController {
     private final AreaService areaService;
 
     @GetMapping("/areas")
-    public List<AreaResponseDto> searchAreasByCity(@RequestParam(required = false) String city) {
-        List<Area> areas;
-        if (city == null) {
-            areas = areaService.findAllAreas();
-        } else {
-            areas = areaService.findByCity(city);
-        }
+    public List<AreaResponseDto> searchAreasByCity(@RequestParam(required = false) String city,@RequestParam(required = false) UUID areaID, @RequestParam(required = false) String areaName) {
+        return areaService.searchAreas(city,areaID,areaName);
 
-        List<AreaResponseDto> response = areas.stream()
-                .map(AreaResponseDto::from)
-                .collect(Collectors.toList());
 
-        return response;
     }
 
     @PostMapping("/areas")
     public void createArea(@Valid @RequestBody AreaRequestDto areaRequestDto) {
-        Area newArea = areaRequestDto.toEntity();
-        areaService.save(newArea);
+        areaService.save(areaRequestDto);
     }
 
     @PutMapping("/areas/{areaId}")

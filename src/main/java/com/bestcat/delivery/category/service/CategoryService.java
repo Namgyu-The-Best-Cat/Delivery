@@ -23,8 +23,8 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public void save(Category newCategory) {
-        categoryRepository.save(newCategory);
+    public void save(CategoryRequestDto requestDto) {
+        categoryRepository.save(requestDto.toEntity());
     }
 
     public List<CategoryResponseDto> searchAreas(String categoryName, UUID categoryId) {

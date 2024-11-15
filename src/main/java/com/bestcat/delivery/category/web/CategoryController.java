@@ -20,9 +20,8 @@ public class CategoryController {
 
     @PostMapping("/categories")
     public void createCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto) {
-        Category newCategory = categoryRequestDto.toEntity();
 
-        categoryService.save(newCategory);
+        categoryService.save(categoryRequestDto);
 
     }
 
