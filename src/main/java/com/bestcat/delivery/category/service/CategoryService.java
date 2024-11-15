@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,9 @@ public class CategoryService {
         } else if (categoryName != null) {
             categories = categoryRepository.findByCategoryName(categoryName);
         } else if (categoryId != null) {
-            categories = categoryRepository.findByCategoryId(categoryId);
+            Optional<Category> areaOptional = categoryRepository.findById(categoryId);
+            categories = areaOptional.map(Collections::singletonList)
+                    .orElseGet(() -> categoryRepository.findAll());
         } else {
             categories = categoryRepository.findAll();
         }
