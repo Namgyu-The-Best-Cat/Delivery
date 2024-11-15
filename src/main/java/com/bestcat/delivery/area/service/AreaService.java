@@ -4,11 +4,11 @@ import com.bestcat.delivery.area.dto.AreaRequestDto;
 import com.bestcat.delivery.area.dto.AreaResponseDto;
 import com.bestcat.delivery.area.entity.Area;
 import com.bestcat.delivery.area.repository.AreaRepository;
-import com.bestcat.delivery.category.dto.CategoryResponseDto;
-import com.bestcat.delivery.category.entity.Category;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,7 @@ public class AreaService {
         this.areaRepository = areaRepository;
     }
 
-    public List<AreaResponseDto> searchAreas(String city, UUID areaId, String areaName) {
+    public List<AreaResponseDto> searchAreas(String city, UUID areaId, String areaName, Integer page, Integer size) {
         List<Area> areas;
 
         if (city != null && areaId != null && areaName != null) {
@@ -40,12 +40,16 @@ public class AreaService {
         } else if (areaId != null) {
             Optional<Area> areaOptional = areaRepository.findById(areaId);
             areas = areaOptional.map(Collections::singletonList)
-                    .orElseGet(() -> areaRepository.findAll());
+                    .orElseGet(() -> {
+                        Pageable pageable = PageRequest.of(page != null ? page : 0, size != null ? size : 10);
+                        return areaRepository.findAll(pageable).getContent();
+                    });
 
         } else if (areaName != null) {
             areas = areaRepository.findByAreaName(areaName);
         } else {
-            areas = areaRepository.findAll();
+            Pageable pageable = PageRequest.of(page != null ? page : 0, size != null ? size : 10);
+            areas = areaRepository.findAll(pageable).getContent();
         }
 
         return areas.stream()

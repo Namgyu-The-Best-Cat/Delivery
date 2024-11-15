@@ -21,8 +21,12 @@ public class AreaController {
     private final AreaService areaService;
 
     @GetMapping("/areas")
-    public List<AreaResponseDto> searchAreasByCity(@RequestParam(required = false) String city,@RequestParam(required = false) UUID areaID, @RequestParam(required = false) String areaName) {
-        return areaService.searchAreas(city,areaID,areaName);
+    public List<AreaResponseDto> searchAreasByCity(@RequestParam(required = false) String city,
+                                                   @RequestParam(required = false) UUID areaID,
+                                                   @RequestParam(required = false) String areaName,
+                                                   @RequestParam(defaultValue = "0") Integer page,
+                                                   @RequestParam(defaultValue = "10") Integer size) {
+        return areaService.searchAreas(city,areaID,areaName, page, size);
 
 
     }
