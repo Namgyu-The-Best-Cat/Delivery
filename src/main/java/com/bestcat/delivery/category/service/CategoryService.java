@@ -28,7 +28,7 @@ public class CategoryService {
         categoryRepository.save(requestDto.toEntity());
     }
 
-    public List<CategoryResponseDto> searchAreas(String categoryName, UUID categoryId) {
+    public List<CategoryResponseDto> searchCategories(String categoryName, UUID categoryId) {
         List<Category> categories;
         if (categoryName != null && categoryId != null) {
             categories = categoryRepository.findByCategoryNameAndCategoryId(categoryName, categoryId);
@@ -49,9 +49,9 @@ public class CategoryService {
 
     @Transactional
     public void updateCategory(UUID categoryId, @Valid CategoryRequestDto categoryRequestDto) {
-        Category updateCategory = categoryRepository.findById(categoryId).orElse(null);
-        if (updateCategory != null) {
-            updateCategory.update(categoryRequestDto);
-        }
+        Category updateCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("다음 카테고리를 찾을 수 없습니다. " + categoryId));
+
     }
+
 }
