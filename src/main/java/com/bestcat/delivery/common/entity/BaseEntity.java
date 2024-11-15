@@ -51,4 +51,8 @@ public class BaseEntity {
         return new AuditorAwareImpl().getCurrentAuditor().orElseThrow(() ->
                 new RestApiException(NOT_AUTHENTICATED_USER));
     }
+    public void delete(UUID userId){
+        this.deletedAt = new Timestamp(System.currentTimeMillis());
+        this.deletedBy = userId;
+    }
 }
