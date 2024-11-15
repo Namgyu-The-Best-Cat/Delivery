@@ -2,6 +2,7 @@ package com.bestcat.delivery.order.entity;
 
 import com.bestcat.delivery.order.entity.type.OrderStatus;
 import com.bestcat.delivery.order.entity.type.OrderType;
+import com.bestcat.delivery.store.entity.Store;
 import com.bestcat.delivery.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,9 +37,9 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "store_id", nullable = false)
-//    private Store store;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_type", nullable = false, length = 20)
