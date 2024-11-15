@@ -29,7 +29,7 @@ public class CategoryController {
     public List<CategoryResponseDto> searchCategory(
             @RequestParam(required = false) String categoryName,
             @RequestParam(required = false) UUID categoryId) {
-        return categoryService.searchAreas(categoryName, categoryId);
+        return categoryService.searchCategories(categoryName, categoryId);
     }
 
     @PutMapping("/categories/{categoryId}")
