@@ -6,11 +6,13 @@ import com.bestcat.delivery.common.entity.BaseEntity;
 import com.bestcat.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ManyToAny;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_store")
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Store extends BaseEntity {
@@ -56,5 +59,7 @@ public class Store extends BaseEntity {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StoreCategory> storeCategories = new HashSet<>();
+
+
 
 }
