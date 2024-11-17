@@ -1,7 +1,8 @@
 package com.bestcat.delivery.order.entity;
 
+
 import com.bestcat.delivery.common.entity.BaseEntity;
-import com.bestcat.delivery.menu.entity.Menu;
+import com.bestcat.delivery.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,26 +18,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "p_order_items")
+@Table(name = "p_order_cancellations")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderItems extends BaseEntity {
+public class OrderCancellations extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name ="order_items_id",updatable = false, nullable = false)
-    private UUID orderItemsId;
+    @Column(name ="cancellation_id",updatable = false, nullable = false)
+    private UUID cancellationId;
 
     @ManyToOne
-    @JoinColumn(name = "menu_id", nullable = false)
-    private Menu menu;
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 
-    @Column(nullable = false)
-    private Integer quantity; // 메뉴 수량
+    @ManyToOne
+    @JoinColumn(name = "user_id",  nullable = false)
+    private User user;
 
-    @Column(nullable = false, precision = 10, scale = 2)
-    private Integer price; // 메뉴 가격
+    @Column(name = "cancel_reason", nullable = false)
+    private String cancelReason;
+
 
 }
