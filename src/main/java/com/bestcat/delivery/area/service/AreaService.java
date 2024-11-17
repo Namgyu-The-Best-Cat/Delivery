@@ -41,7 +41,7 @@ public class AreaService {
             Optional<Area> areaOptional = areaRepository.findById(areaId);
             areas = areaOptional.map(Collections::singletonList)
                     .orElseGet(() -> {
-                        Pageable pageable = PageRequest.of(page != null ? page : 0, size != null ? size : 10);
+                        Pageable pageable = PageRequest.of(page,size);
                         return areaRepository.findAll(pageable).getContent();
                     });
 
