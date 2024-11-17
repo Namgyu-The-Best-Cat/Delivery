@@ -4,17 +4,14 @@ import com.bestcat.delivery.category.entity.Category;
 import com.bestcat.delivery.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "store_category")
 @Getter
-@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class StoreCategory extends BaseEntity {
@@ -31,4 +28,8 @@ public class StoreCategory extends BaseEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    public StoreCategory(Store store, Category category) {
+        this.store = store;
+        this.category = category;
+    }
 }

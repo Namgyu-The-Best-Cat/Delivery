@@ -20,10 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class StoreService {
@@ -50,18 +47,16 @@ public class StoreService {
 
         Set<StoreCategory> storeCategories = new HashSet<>();
 
-        for (UUID categoryId : storeRequestDto.categoryIds()) {
-            Category category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new IllegalArgumentException("해당하는 Category가 없습니다."));
-            StoreCategory storeCategory = new StoreCategory(store, category);
-            storeCategories.add(storeCategory);
+        List<Category> categories = storeRequestDto.categoryIds().stream()
+                .map(categoryId -> categoryRepository.findById(categoryId)
+                        .orElseThrow(() -> new IllegalArgumentException("해당하는 Category가 없습니다.")))
+                .toList();
+
+        for (Category category : categories) {
+            store.addCategory(category);
         }
 
-        // Store에 StoreCategory 설정
-        store.setStoreCategories(storeCategories);
-
-        // Store 저장
-        storeRepository.save(store); // 이때 Store와 관련된 StoreCategory도 함께 저장됨
+        storeRepository.save(store);
     }
 
 
@@ -123,6 +118,7 @@ public class StoreService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new IllegalArgumentException(storeId + "값을 갖는 Store가 없습니다."));
 
+        store.update(storeRequestDto);
     }
 
 //    @Transactional
@@ -130,4 +126,5 @@ public class StoreService {
 //        Store store = storeRepository.findById(storeId)
 //                .orElseThrow(() -> new IllegalArgumentException(storeId + "에 해당하는 Store가 없습니다."));
 //    }
+
 }
