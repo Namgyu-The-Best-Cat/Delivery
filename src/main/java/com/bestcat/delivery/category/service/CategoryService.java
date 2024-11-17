@@ -6,6 +6,7 @@ import com.bestcat.delivery.category.dto.CategoryRequestDto;
 import com.bestcat.delivery.category.dto.CategoryResponseDto;
 import com.bestcat.delivery.category.entity.Category;
 import com.bestcat.delivery.category.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ public class CategoryService {
     }
 
     public void save(CategoryRequestDto requestDto) {
+
         categoryRepository.save(requestDto.toEntity());
     }
 
@@ -49,9 +51,10 @@ public class CategoryService {
 
     @Transactional
     public void updateCategory(UUID categoryId, @Valid CategoryRequestDto categoryRequestDto) {
-        Category updateCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("다음 카테고리를 찾을 수 없습니다. " + categoryId));
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException(categoryId + " 값을 갖는 category가 없습니다."));
 
+        category.update(categoryRequestDto);
     }
 
 }
