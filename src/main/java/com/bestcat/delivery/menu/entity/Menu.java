@@ -31,7 +31,6 @@ public class Menu extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-
     private String name;
 
     private Integer price;

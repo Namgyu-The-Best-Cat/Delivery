@@ -22,26 +22,26 @@ public class MenuApiController {
     private final MenuService menuService;
 
     @GetMapping("/stores/{storeId}/menus")
-    public List<MenuResponseDto> getMenus(@PathVariable String storeId) {
-        return menuService.getMenus(storeId);
+    public ResponseEntity<List<MenuResponseDto>> getMenus(@PathVariable String storeId) {
+        return menuService.getMenus(UUID.fromString(storeId));
     }
 
-    @PostMapping("/menus")
-    public ResponseEntity<MenuResponseDto> createMenu(@RequestBody MenuRequestDto requestDto
+    @PostMapping(value = "/menus", consumes = "multipart/form-data")
+    public ResponseEntity<MenuResponseDto> createMenu(@ModelAttribute MenuRequestDto requestDto
             , @AuthenticationPrincipal UserDetailsImpl userDetails){
         return menuService.createMenu(requestDto, userDetails.getUser());
     }
 
-    @PutMapping("/menus/{id}")
-    public ResponseEntity<MenuResponseDto> updateMenu(@PathVariable UUID id
-            , @RequestBody MenuRequestDto requestDto
+    @PutMapping(value = "/menus/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<MenuResponseDto> updateMenu(@PathVariable String id
+            , @ModelAttribute MenuRequestDto requestDto
             , @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return menuService.updateMenu(id, requestDto, userDetails.getUser());
+        return menuService.updateMenu(UUID.fromString(id), requestDto, userDetails.getUser());
     }
 
     @DeleteMapping("/menus/{id}")
-    public ResponseEntity<MenuResponseDto> deleteMenu(@PathVariable UUID id
+    public ResponseEntity<MenuResponseDto> deleteMenu(@PathVariable String id
             , @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return menuService.deleteMenu(id, userDetails.getUser());
+        return menuService.deleteMenu(UUID.fromString(id), userDetails.getUser());
     }
 }
