@@ -5,6 +5,7 @@ import com.bestcat.delivery.order.entity.OrderItems;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public record OrderResponse(
         UUID orderId,
@@ -17,9 +18,13 @@ public record OrderResponse(
         Timestamp createdAt,
         Timestamp updatedAt,
         double totalPrice, // 총 가격
-        List<OrderItems> items
+        List<OrderItemResponse> items
 ) {
     public static OrderResponse fromEntity(Order order, double totalPrice, List<OrderItems> items) {
+        List<OrderItemResponse> itemResponses = items.stream()
+                .map(OrderItemResponse::fromEntity)
+                .toList();
+
         return new OrderResponse(
                 order.getOrderId(),
                 order.getUser().getId(),
@@ -31,7 +36,7 @@ public record OrderResponse(
                 order.getCreatedAt(),
                 order.getUpdateAt(),
                 totalPrice,
-                items
+                itemResponses
         );
     }
 }
