@@ -40,6 +40,19 @@ public enum ErrorCode {
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문을 찾을 수 없습니다."),
     INVALID_ORDER_STATUS(HttpStatus.BAD_REQUEST, "유효하지 않은 주문 상태입니다."),
 
+    // menu
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다."),
+
+    // review
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 리뷰를 찾을 수 없습니다."),
+    CONTENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "본문이 비어있습니다. 리뷰 내용을 입력해주세요."),
+
+    // ai
+    AI_RESPONSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Ai 설명 생성에 오류가 발생했습니다."),
+
+    // category
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 카테고리를 찾을 수 없습니다.")
+
     // payment
     INVALID_PAYMENT_METHOD(HttpStatus.BAD_REQUEST, "유효하지 않은 결제 수단입니다."),
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 결제를 찾을 수 없습니다."),

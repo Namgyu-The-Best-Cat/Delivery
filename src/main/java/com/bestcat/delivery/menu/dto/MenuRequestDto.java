@@ -8,6 +8,7 @@ import java.util.UUID;
 public record MenuRequestDto(
         String name,
         int price,
+        UUID storeId,
         UUID categoryId,
         MultipartFile photo,
         String description

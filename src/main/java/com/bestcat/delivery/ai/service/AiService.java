@@ -4,11 +4,14 @@ import com.bestcat.delivery.ai.dto.AiRequestDto;
 import com.bestcat.delivery.ai.dto.AiResponseDto;
 import com.bestcat.delivery.ai.entity.AiLog;
 import com.bestcat.delivery.ai.repository.AiRepository;
+import com.bestcat.delivery.common.exception.RestApiException;
+import com.bestcat.delivery.common.type.ErrorCode;
 import com.bestcat.delivery.user.entity.RoleType;
 import com.bestcat.delivery.user.entity.User;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AiService {
 
     private final WebClient webClient;
@@ -32,14 +36,14 @@ public class AiService {
 
     public ResponseEntity<AiResponseDto> createDescription(AiRequestDto requestDto, User user) {
 
-//        if ( !user.getRole().equals(RoleType.OWNER) ) {
-//            throw new IllegalArgumentException("메뉴 설명 생성 권한이 없습니다.");
-//        }
+        if ( !user.getRole().equals(RoleType.OWNER) ) {
+            throw new RestApiException(ErrorCode.INVALID_ROLE);
+        }
 
         List<String> responseFromAi = requestToAi(requestDto.name());
 
         if (responseFromAi.isEmpty() || responseFromAi.size() < 2) {
-            throw new IllegalArgumentException("Ai 설명 생성에 오류가 발생했습니다.");
+            throw new RestApiException(ErrorCode.AI_RESPONSE_ERROR);
         }
 
         AiLog aiLog = AiLog.builder()
@@ -47,10 +51,10 @@ public class AiService {
                 .respText(responseFromAi.get(1))
                 .build();
 
-        System.out.println("🍓🍓 Request : " + responseFromAi.get(0));
-        System.out.println("Length = " + responseFromAi.get(0).length());
-        System.out.println("🍓🍓 Response : " + responseFromAi.get(1));
-        System.out.println("Length = " + responseFromAi.get(1).length());
+        log.info("🍓🍓 Request : {} 🍓🍓", responseFromAi.get(0));
+        log.info("Length = {}", responseFromAi.get(0).length());
+        log.info("🍓🍓 Response : {} 🍓🍓", responseFromAi.get(1));
+        log.info("Length = {}", responseFromAi.get(1).length());
 
         aiRepository.save(aiLog);
         return ResponseEntity.ok().body(new AiResponseDto(aiLog.getRespText().split("\\^")));
@@ -115,7 +119,7 @@ public class AiService {
                     .asText();
 
         } catch (Exception e) {
-            throw new IllegalArgumentException("AI 요청 응답에 오류가 발생했습니다.");
+            throw new RestApiException(ErrorCode.AI_RESPONSE_ERROR);
         }
     }
 

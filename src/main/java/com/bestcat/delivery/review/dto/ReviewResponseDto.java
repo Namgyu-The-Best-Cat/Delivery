@@ -27,8 +27,7 @@ public record ReviewResponseDto(
         return new ReviewResponseDto(
                 review.getId(),
                 review.getUser().getId(),
-//                review.getOrder().getOrderId(),
-                UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+                review.getOrder().getOrderId(),
                 review.getContent(),
                 review.getRating(),
                 review.getCreatedAt(),
