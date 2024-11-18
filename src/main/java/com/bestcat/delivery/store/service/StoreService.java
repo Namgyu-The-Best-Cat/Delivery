@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +46,6 @@ public class StoreService {
 
         Store store = storeRequestDto.toEntity(owner, area);
 
-        Set<StoreCategory> storeCategories = new HashSet<>();
-
         List<Category> categories = storeRequestDto.categoryIds().stream()
                 .map(categoryId -> categoryRepository.findById(categoryId)
                         .orElseThrow(() -> new IllegalArgumentException("해당하는 Category가 없습니다.")))
@@ -62,7 +61,7 @@ public class StoreService {
 
     public Page<StoreResponseDto> searchStores(String storeName, UUID storeId, String areaName, UUID areaId, Integer page, Integer size) {
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
 
         Specification<Store> specification = createSpecification(storeName, storeId, areaName, areaId);
 
@@ -71,10 +70,15 @@ public class StoreService {
     }
 
     private Specification<Store> createSpecification(String storeName, UUID storeId, String areaName, UUID areaId) {
-        return Specification.where(storeNameLike(storeName))
+        return Specification.where(isNotDeleted())
+                .and(storeNameLike(storeName))
                 .and(storeIdEquals(storeId))
                 .and(areaNameEquals(areaName))
                 .and(areaIdEquals(areaId));
+    }
+    private Specification<Store> isNotDeleted() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.isNull(root.get("deletedAt"));
     }
 
     private Specification<Store> areaIdEquals(UUID areaId) {
@@ -121,10 +125,14 @@ public class StoreService {
         store.update(storeRequestDto);
     }
 
-//    @Transactional
-//    public void deleteStore(UUID storeId, @Valid StoreRequestDto storeRequestDto) {
-//        Store store = storeRepository.findById(storeId)
-//                .orElseThrow(() -> new IllegalArgumentException(storeId + "에 해당하는 Store가 없습니다."));
-//    }
+
+
+    @Transactional
+    public void deleteStore(UUID storeId, UUID userId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new IllegalArgumentException(storeId + "에 해당하는 Store가 없습니다."));
+
+        store.delete(userId);
+    }
 
 }

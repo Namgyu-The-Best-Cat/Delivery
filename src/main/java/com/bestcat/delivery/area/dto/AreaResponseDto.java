@@ -10,7 +10,7 @@ public record AreaResponseDto(
         String areaName
 ) {
 
-    public static AreaResponseDto from(Area area) {
+    public static AreaResponseDto fromArea(Area area) {
         return new AreaResponseDto(
                 area.getAreaId(),
                 area.getCity(),
