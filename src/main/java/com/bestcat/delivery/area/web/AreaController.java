@@ -1,8 +1,6 @@
 package com.bestcat.delivery.area.web;
 import com.bestcat.delivery.area.dto.AreaRequestDto;
 import com.bestcat.delivery.area.dto.AreaResponseDto;
-import com.bestcat.delivery.area.entity.Area;
-import com.bestcat.delivery.area.repository.AreaRepository;
 import com.bestcat.delivery.area.service.AreaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,25 +18,19 @@ public class AreaController {
     private final AreaService areaService;
 
     @GetMapping("/areas")
-    public List<AreaResponseDto> searchAreasByCity(@RequestParam(required = false) String city) {
-        List<Area> areas;
-        if (city == null) {
-            areas = areaService.findAllAreas();
-        } else {
-            areas = areaService.findByCity(city);
-        }
+    public List<AreaResponseDto> searchAreasByCity(@RequestParam(required = false) String city,
+                                                   @RequestParam(required = false) UUID areaID,
+                                                   @RequestParam(required = false) String areaName,
+                                                   @RequestParam(defaultValue = "0") Integer page,
+                                                   @RequestParam(defaultValue = "10") Integer size) {
+        return areaService.searchAreas(city,areaID,areaName, page, size);
 
-        List<AreaResponseDto> response = areas.stream()
-                .map(AreaResponseDto::from)
-                .collect(Collectors.toList());
 
-        return response;
     }
 
     @PostMapping("/areas")
     public void createArea(@Valid @RequestBody AreaRequestDto areaRequestDto) {
-        Area newArea = areaRequestDto.toEntity();
-        areaService.save(newArea);
+        areaService.save(areaRequestDto);
     }
 
     @PutMapping("/areas/{areaId}")

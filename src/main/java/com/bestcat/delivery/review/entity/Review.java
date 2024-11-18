@@ -36,6 +36,7 @@ public class Review extends BaseEntity {
     private String content;
     private Integer rating;
 
+
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ReviewPhoto> photos;
 

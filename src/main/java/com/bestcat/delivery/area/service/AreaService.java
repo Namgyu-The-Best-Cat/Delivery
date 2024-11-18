@@ -4,14 +4,16 @@ import com.bestcat.delivery.area.dto.AreaRequestDto;
 import com.bestcat.delivery.area.dto.AreaResponseDto;
 import com.bestcat.delivery.area.entity.Area;
 import com.bestcat.delivery.area.repository.AreaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AreaService {
@@ -22,25 +24,51 @@ public class AreaService {
         this.areaRepository = areaRepository;
     }
 
+    public List<AreaResponseDto> searchAreas(String city, UUID areaId, String areaName, Integer page, Integer size) {
+        List<Area> areas;
 
-    public List<Area> findAllAreas() {
-        return areaRepository.findAll();
+        if (city != null && areaId != null && areaName != null) {
+            areas = areaRepository.findByCityAndAreaIdAndAreaName(city, areaId, areaName);
+        } else if (city != null && areaId != null) {
+            areas = areaRepository.findByCityAndAreaId(city, areaId);
+        } else if (city != null && areaName != null) {
+            areas = areaRepository.findByCityAndAreaName(city, areaName);
+        } else if (areaId != null && areaName != null) {
+            areas = areaRepository.findByAreaIdAndAreaName(areaId, areaName);
+        } else if (city != null) {
+            areas = areaRepository.findByCity(city);
+        } else if (areaId != null) {
+            Optional<Area> areaOptional = areaRepository.findById(areaId);
+            areas = areaOptional.map(Collections::singletonList)
+                    .orElseGet(() -> {
+                        Pageable pageable = PageRequest.of(page, size);
+                        return areaRepository.findAll(pageable).getContent();
+                    });
+
+        } else if (areaName != null) {
+            areas = areaRepository.findByAreaName(areaName);
+        } else {
+            Pageable pageable = PageRequest.of(page,size);
+            areas = areaRepository.findAll(pageable).getContent();
+        }
+
+        return areas.stream()
+                .map(AreaResponseDto::from)
+                .collect(Collectors.toList());
     }
 
-    public List<Area> findByCity(String city) {
-        return areaRepository.findByCity(city);
-    }
-
-    public void save(Area newArea) {
-        areaRepository.save(newArea);
+    public void save(AreaRequestDto requestDto) {
+        areaRepository.save(requestDto.toEntity());
     }
 
     @Transactional
     public void updateArea(UUID areaId, @Valid AreaRequestDto areaRequestDto) {
-        Area updateArea = areaRepository.findByAreaId(areaId);
-        updateArea.update(areaRequestDto);
+        Area area = areaRepository.findById(areaId)
+                .orElseThrow(() -> new IllegalArgumentException(areaId + " 값을 갖는 area가 없습니다."));
 
+        area.update(areaRequestDto);
     }
+
 
     public void deleteArea(UUID areaId) {
         areaRepository.deleteByAreaId(areaId);

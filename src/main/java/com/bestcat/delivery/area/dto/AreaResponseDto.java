@@ -9,7 +9,7 @@ public record AreaResponseDto(
         String city,
         String areaName
 ) {
-    // Entity → DTO 변환 메서드
+
     public static AreaResponseDto from(Area area) {
         return new AreaResponseDto(
                 area.getAreaId(),
