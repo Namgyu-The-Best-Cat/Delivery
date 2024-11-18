@@ -75,6 +75,8 @@ public class ReviewService {
                 .rating(requestDto.rating())
                 .build();
 
+        review.getOrder().getStore().incrementTotalReviews(review.getRating());
+
         reviewRepository.save(review);
 
         if ( !requestDto.file().isEmpty() ){
@@ -95,6 +97,12 @@ public class ReviewService {
         if ( !review.getUser().getId().equals(userId) ) throw new RestApiException(ErrorCode.INVALID_ROLE);
 
         review.update(requestDto);
+
+        // 수정 시 기존 평점과 수정 후 평점 차이만큼 +
+        if( requestDto.rating() != review.getRating() ) {
+            review.getOrder().getStore().updateTotalStars(requestDto.rating() - review.getRating());
+        }
+
         reviewRepository.save(review);
 
         if ( !requestDto.file().isEmpty() ){
@@ -112,6 +120,7 @@ public class ReviewService {
         if( !review.getUser().getId().equals(userId) ) throw new RestApiException(ErrorCode.INVALID_ROLE);
 
         review.delete(id);
+        review.getOrder().getStore().decrementTotalReviews(review.getRating());
         reviewRepository.save(review);
         return ResponseEntity.ok().body(ReviewResponseDto.from(review));
     }

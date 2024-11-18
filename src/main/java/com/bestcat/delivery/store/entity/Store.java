@@ -3,6 +3,7 @@ package com.bestcat.delivery.store.entity;
 import com.bestcat.delivery.area.entity.Area;
 import com.bestcat.delivery.category.entity.Category;
 import com.bestcat.delivery.common.entity.BaseEntity;
+import com.bestcat.delivery.review.entity.Review;
 import com.bestcat.delivery.store.dto.StoreRequestDto;
 import com.bestcat.delivery.user.entity.User;
 import jakarta.persistence.*;
@@ -11,10 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ManyToAny;
-import org.hibernate.annotations.UuidGenerator;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -98,5 +96,19 @@ public class Store extends BaseEntity {
         if (storeRequestDto.totalStars() != null) {
             this.totalStars = storeRequestDto.totalStars();
         }
+    }
+
+    public void incrementTotalReviews(Integer star) {
+        this.totalStars += star;
+        this.totalReviews++;
+    }
+
+    public void updateTotalStars(Integer star) {
+        this.totalStars += star;
+    }
+
+    public void decrementTotalReviews(Integer star) {
+        this.totalStars -= star;
+        this.totalReviews--;
     }
 }
