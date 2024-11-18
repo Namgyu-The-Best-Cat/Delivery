@@ -3,6 +3,7 @@ package com.bestcat.delivery.order.service;
 import com.bestcat.delivery.common.exception.RestApiException;
 import com.bestcat.delivery.common.type.ErrorCode;
 import com.bestcat.delivery.menu.entity.Menu;
+import com.bestcat.delivery.order.dto.request.OrderCancelRequest;
 import com.bestcat.delivery.order.dto.request.OrderCreationRequest;
 import com.bestcat.delivery.order.dto.request.OrderStatusUpdateRequest;
 import com.bestcat.delivery.order.dto.response.OrderCancelResponse;
@@ -111,7 +112,7 @@ public class OrderService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrders(UUID userId) {
+    public List<OrderResponse> getOrderList(UUID userId) {
         User user = getUser(userId);
         List<Order> orders;
         if (user.getRole().equals(RoleType.CUSTOMER)) {
@@ -140,7 +141,7 @@ public class OrderService {
      * @return
      */
     @Transactional
-    public OrderCancelResponse cancelOrder(UUID orderId, UUID userId, String cancelReason) {
+    public OrderCancelResponse cancelOrder(UUID orderId, UUID userId, OrderCancelRequest request) {
         Order order = getOrder(orderId);
 
         // 요구사항_권한 확인: 고객만 자신의 주문을 취소할 수 있음
@@ -156,7 +157,7 @@ public class OrderService {
         order.cancelOrder();
         OrderCancellations orderCancellations = OrderCancellations.builder()
                 .order(order)
-                .cancelReason(cancelReason)
+                .cancelReason(request.cancelReason())
                 .build();
 
         orderRepository.save(order);
