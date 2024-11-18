@@ -51,7 +51,7 @@ public enum ErrorCode {
     AI_RESPONSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Ai 설명 생성에 오류가 발생했습니다."),
 
     // category
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 카테고리를 찾을 수 없습니다.")
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 카테고리를 찾을 수 없습니다."),
 
     // payment
     INVALID_PAYMENT_METHOD(HttpStatus.BAD_REQUEST, "유효하지 않은 결제 수단입니다."),
