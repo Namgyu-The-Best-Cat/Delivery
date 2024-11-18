@@ -20,11 +20,19 @@ public enum ResponseMessage {
     NICKNAME_UPDATE_SUCCESS("닉네임 변경 성공"),
 
 
+    //order
+    ORDER_CREATE_SUCCESS("주문 생성 성공"),
+    ORDER_LIST_SUCCESS("주문 리스트 조회 성공"),
+    ORDER_STATUS_CHANGE_SUCCESS("주문 상태 변경 성공"),
+    ORDER_DETAIL_SUCCESS("주문 상세 조회 성공"),
+    ORDER_CANCEL_SUCCESS("주문 취소 성공"),
+
+    // payment
+    PAYMENT_SUCCESS("결제 성공"),
+    PAYMENT_DETAIL_SUCCESS("결제 상세 조회 성공"),
+    PAYMENT_STATUS_CHANGE_SUCCESS("결제 상태 변경 성공"),
+
     // 다른 도메인 추가...
-
-
-
-
 
     ;
     private final String message;

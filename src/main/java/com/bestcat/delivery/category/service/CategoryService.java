@@ -8,6 +8,11 @@ import com.bestcat.delivery.category.entity.Category;
 import com.bestcat.delivery.category.repository.CategoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,23 +35,46 @@ public class CategoryService {
         categoryRepository.save(requestDto.toEntity());
     }
 
-    public List<CategoryResponseDto> searchCategories(String categoryName, UUID categoryId) {
-        List<Category> categories;
-        if (categoryName != null && categoryId != null) {
-            categories = categoryRepository.findByCategoryNameAndCategoryId(categoryName, categoryId);
-        } else if (categoryName != null) {
-            categories = categoryRepository.findByCategoryName(categoryName);
-        } else if (categoryId != null) {
-            Optional<Category> areaOptional = categoryRepository.findById(categoryId);
-            categories = areaOptional.map(Collections::singletonList)
-                    .orElseGet(() -> categoryRepository.findAll());
-        } else {
-            categories = categoryRepository.findAll();
+    public Page<CategoryResponseDto> searchCategories(String categoryName, UUID categoryId, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
+
+        Specification<Category> specification = createSpecification(categoryName, categoryId);
+
+        Page<Category> categories = categoryRepository.findAll(specification, pageable);
+
+        return categories.map(CategoryResponseDto::fromCategory);
+    }
+
+    private Specification<Category> createSpecification(String categoryName, UUID categoryId) {
+        Specification<Category> spec = Specification.where(isNotDeleted());
+
+        // 조건 추가
+        if (categoryName != null && !categoryName.isEmpty()) {
+            spec = spec.and(categoryNameLike(categoryName));
+        }
+        if (categoryId != null) {
+            spec = spec.and(categoryIdEquals(categoryId));
         }
 
-        return categories.stream()
-                .map(CategoryResponseDto::fromCategory)
-                .collect(Collectors.toList());
+        return spec;
+    }
+
+    private Specification<Category> isNotDeleted() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("deletedAt"));
+    }
+
+    private Specification<Category> categoryNameLike(String categoryName) {
+        if (categoryName == null || categoryName.isEmpty()) {
+            return null;
+        }
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("categoryName"), "%" + categoryName + "%");
+    }
+
+    private Specification<Category> categoryIdEquals(UUID categoryId) {
+        if (categoryId == null) {
+            return null;
+        }
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("categoryId"), categoryId);
     }
 
     @Transactional
@@ -57,4 +85,10 @@ public class CategoryService {
         category.update(categoryRequestDto);
     }
 
+    @Transactional
+    public void deleteCategory(UUID categoryId, UUID userId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 category가 존재하지 않습니다."));
+        category.delete(userId);
+    }
 }
