@@ -98,13 +98,17 @@ public class Store extends BaseEntity {
         }
     }
 
-    public void incrementTotalReviews(Review review) {
-        this.totalStars += review.getRating();
+    public void incrementTotalReviews(Integer star) {
+        this.totalStars += star;
         this.totalReviews++;
     }
 
-    public void decrementTotalReviews(Review review) {
-        this.totalStars -= review.getRating();
+    public void updateTotalStars(Integer star) {
+        this.totalStars += star;
+    }
+
+    public void decrementTotalReviews(Integer star) {
+        this.totalStars -= star;
         this.totalReviews--;
     }
 }

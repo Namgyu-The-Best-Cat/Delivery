@@ -69,7 +69,7 @@ public class ReviewService {
                 .rating(requestDto.rating())
                 .build();
 
-        review.getOrder().getStore().incrementTotalReviews(review);
+        review.getOrder().getStore().incrementTotalReviews(review.getRating());
 
         reviewRepository.save(review);
 
@@ -91,7 +91,12 @@ public class ReviewService {
         if ( !review.getUser().getId().equals(userId) ) throw new IllegalArgumentException("수정 권한이 없습니다.");
 
         review.update(requestDto);
-        review.getOrder().getStore().incrementTotalReviews(review);
+
+        // 수정 시 기존 평점과 수정 후 평점 차이만큼 +
+        if( requestDto.rating() != review.getRating() ) {
+            review.getOrder().getStore().updateTotalStars(requestDto.rating() - review.getRating());
+        }
+
         reviewRepository.save(review);
 
         if ( !requestDto.file().isEmpty() ){
@@ -109,7 +114,7 @@ public class ReviewService {
         if( !review.getUser().getId().equals(userId) ) throw new IllegalArgumentException("삭제 권한이 없습니다.");
 
         review.delete(id);
-        review.getOrder().getStore().decrementTotalReviews(review);
+        review.getOrder().getStore().decrementTotalReviews(review.getRating());
         reviewRepository.save(review);
         return ResponseEntity.ok().body(ReviewResponseDto.from(review));
     }
