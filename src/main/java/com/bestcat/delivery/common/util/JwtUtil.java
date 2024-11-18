@@ -1,7 +1,13 @@
 package com.bestcat.delivery.common.util;
 
 
+import static com.bestcat.delivery.common.type.ResponseMessage.LOGOUT_SUCCESS;
+
+import com.bestcat.delivery.common.dto.SuccessResponse;
+import com.bestcat.delivery.common.exception.RestApiException;
+import com.bestcat.delivery.common.type.ResponseMessage;
 import com.bestcat.delivery.user.entity.RoleType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -24,13 +30,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 // @Slf4j
+@RequiredArgsConstructor
 @Component
 public class JwtUtil {
     // Header
@@ -159,4 +171,6 @@ public class JwtUtil {
         }
         return null;
     }
+
+
 }

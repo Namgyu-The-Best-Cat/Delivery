@@ -1,8 +1,6 @@
 package com.bestcat.delivery.area.web;
 import com.bestcat.delivery.area.dto.AreaRequestDto;
 import com.bestcat.delivery.area.dto.AreaResponseDto;
-import com.bestcat.delivery.area.entity.Area;
-import com.bestcat.delivery.area.repository.AreaRepository;
 import com.bestcat.delivery.area.service.AreaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

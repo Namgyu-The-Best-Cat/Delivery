@@ -41,14 +41,14 @@ public class AreaService {
             Optional<Area> areaOptional = areaRepository.findById(areaId);
             areas = areaOptional.map(Collections::singletonList)
                     .orElseGet(() -> {
-                        Pageable pageable = PageRequest.of(page,size);
+                        Pageable pageable = PageRequest.of(page, size);
                         return areaRepository.findAll(pageable).getContent();
                     });
 
         } else if (areaName != null) {
             areas = areaRepository.findByAreaName(areaName);
         } else {
-            Pageable pageable = PageRequest.of(page != null ? page : 0, size != null ? size : 10);
+            Pageable pageable = PageRequest.of(page,size);
             areas = areaRepository.findAll(pageable).getContent();
         }
 
@@ -63,15 +63,12 @@ public class AreaService {
 
     @Transactional
     public void updateArea(UUID areaId, @Valid AreaRequestDto areaRequestDto) {
-        Optional<Area> optionalArea = areaRepository.findById(areaId);
-        if (optionalArea.isPresent()) {
-            Area area = optionalArea.get();
-            area.update(areaRequestDto);
-        } else {
-            throw new EntityNotFoundException( areaId + " 값을 갖는 area가 없습니다.");  // 값이 없을 경우 예외 처리
-        }
+        Area area = areaRepository.findById(areaId)
+                .orElseThrow(() -> new IllegalArgumentException(areaId + " 값을 갖는 area가 없습니다."));
 
+        area.update(areaRequestDto);
     }
+
 
     public void deleteArea(UUID areaId) {
         areaRepository.deleteByAreaId(areaId);

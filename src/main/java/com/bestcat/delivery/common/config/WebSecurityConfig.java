@@ -1,11 +1,20 @@
 package com.bestcat.delivery.common.config;
 
 
+import static com.bestcat.delivery.common.type.ResponseMessage.LOGOUT_SUCCESS;
+import static com.bestcat.delivery.common.type.ResponseMessage.SIGN_IN_SUCCESS;
+
+import com.bestcat.delivery.common.dto.SuccessResponse;
+import com.bestcat.delivery.common.type.ResponseMessage;
+import com.bestcat.delivery.common.util.CustomLogoutHandler;
 import com.bestcat.delivery.common.util.JwtAuthenticationFilter;
 import com.bestcat.delivery.common.util.JwtAuthorizationFilter;
 import com.bestcat.delivery.common.util.JwtUtil;
 import com.bestcat.delivery.common.util.UserDetailsServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +24,11 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 @Configuration
 @RequiredArgsConstructor
@@ -28,6 +39,7 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final CustomLogoutHandler customLogoutHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -63,9 +75,9 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
-                        .requestMatchers("/api/users/signin", "/api/users/signup").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
+                        .requestMatchers("/api/users/signin", "/api/users/signup", "/api/auth/*").permitAll() // '/api/users/'로 시작하는 요청 모두 접근 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
-        );
+        ).logout(customLogoutHandler::configureLogout);
 
         http.formLogin(AbstractHttpConfigurer::disable);
 
