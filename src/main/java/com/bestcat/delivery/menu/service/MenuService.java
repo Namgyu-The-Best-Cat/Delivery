@@ -1,12 +1,16 @@
 package com.bestcat.delivery.menu.service;
 
 import com.bestcat.delivery.category.entity.Category;
+import com.bestcat.delivery.category.repository.CategoryRepository;
+import com.bestcat.delivery.common.exception.RestApiException;
+import com.bestcat.delivery.common.type.ErrorCode;
 import com.bestcat.delivery.common.util.FileUpload;
 import com.bestcat.delivery.menu.dto.MenuRequestDto;
 import com.bestcat.delivery.menu.dto.MenuResponseDto;
 import com.bestcat.delivery.menu.entity.Menu;
 import com.bestcat.delivery.menu.repository.MenuRepository;
 import com.bestcat.delivery.store.entity.Store;
+import com.bestcat.delivery.store.repository.StoreRepository;
 import com.bestcat.delivery.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +25,8 @@ import java.util.UUID;
 public class MenuService {
 
     private final MenuRepository menuRepository;
-//    private final StoreRepository storeRepository;
-//    private final CategoryRepository categoryRepository;
+    private final StoreRepository storeRepository;
+    private final CategoryRepository categoryRepository;
 
     private final FileUpload fileUpload;
 
@@ -30,7 +34,7 @@ public class MenuService {
 
         List<Menu> menuList = menuRepository.findByStoreStoreIdAndDeletedAtIsNotNull(storeId);
 
-        if (menuList == null || menuList.isEmpty()) throw new NullPointerException("메뉴가 존재하지 않습니다.");
+        if (menuList == null || menuList.isEmpty()) throw new RestApiException(ErrorCode.MENU_NOT_FOUND);
 
         return ResponseEntity.ok().body(menuList.stream().map(MenuResponseDto::from).toList());
     }
@@ -44,22 +48,17 @@ public class MenuService {
             try {
                 url = fileUpload.uploadSingleFile(requestDto.photo());
             } catch (IOException e) {
-                throw new RuntimeException("파일 업로드 오류 발생 !!");
+                throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
         }
 
-        // TODO 삭제
-        Store store = new Store();
-//        store.setStoreId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
-        Category category = new Category();
-//        category.setCategoryId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
-        //
-
         Menu menu = Menu.builder()
-//                .store(storeRepository.findBy(requestDto.storeId()))
-                .store(store)   // TODO 삭제
-//                .category(categoryRepository.findById(requestDto.categoryId()))
-                .category(category) // TODO 삭제
+                .store(storeRepository.findById(requestDto.storeId()).orElseThrow( () ->
+                        new RestApiException(ErrorCode.STORE_NOT_FOUND)
+                ))
+                .category(categoryRepository.findById(requestDto.categoryId()).orElseThrow( () ->
+                        new RestApiException(ErrorCode.CATEGORY_NOT_FOUND)
+                ))
                 .name(requestDto.name())
                 .price(requestDto.price())
                 .photoUrl(url)
@@ -74,17 +73,14 @@ public class MenuService {
     public ResponseEntity<MenuResponseDto> updateMenu(UUID id, MenuRequestDto requestDto, User user) {
 
         Menu menu = menuRepository.findById(id).orElseThrow( () ->
-            new NullPointerException("해당하는 메뉴가 존재하지 않습니다.")
+            new RestApiException(ErrorCode.MENU_NOT_FOUND)
         );
 
-//        Category category = categoryRepository.findById(requestDto.categoryId()).orElseThrow( () ->
-//                new NullPointerException("해당하는 카테고리가 존재하지 않습니다.")
-//        );
+        if( !menu.getStore().getOwner().getId().equals(user.getId()) ) throw new RestApiException(ErrorCode.INVALID_ROLE);
 
-        // TODO 삭제
-        Category category = new Category();
-//        category.setCategoryId(requestDto.categoryId());
-        //
+        Category category = categoryRepository.findById(requestDto.categoryId()).orElseThrow( () ->
+                new RestApiException(ErrorCode.CATEGORY_NOT_FOUND)
+        );
 
         // 이미지 파일 업로드 로직
         String url = "none.png";
@@ -93,7 +89,7 @@ public class MenuService {
             try {
                 url = fileUpload.uploadSingleFile(requestDto.photo());
             } catch (IOException e) {
-                throw new RuntimeException("파일 업로드 오류 발생 !!");
+                throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
         }
 
@@ -112,10 +108,10 @@ public class MenuService {
     public ResponseEntity<MenuResponseDto> deleteMenu(UUID id, User user) {
 
         Menu menu = menuRepository.findById(id).orElseThrow( () ->
-                new NullPointerException("해당하는 메뉴가 존재하지 않습니다.")
+                new RestApiException(ErrorCode.MENU_NOT_FOUND)
                 );
 
-        if( !menu.getStore().getOwner().getId().equals(user.getId()) ) throw new IllegalStateException("삭제 권한이 없습니다.");
+        if( !menu.getStore().getOwner().getId().equals(user.getId()) ) throw new RestApiException(ErrorCode.INVALID_ROLE);
 
         menu.delete(user.getId());
         menuRepository.save(menu);

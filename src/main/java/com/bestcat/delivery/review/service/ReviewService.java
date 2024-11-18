@@ -1,6 +1,9 @@
 package com.bestcat.delivery.review.service;
 
+import com.bestcat.delivery.common.exception.RestApiException;
+import com.bestcat.delivery.common.type.ErrorCode;
 import com.bestcat.delivery.common.util.FileUpload;
+import com.bestcat.delivery.order.repository.OrderRepository;
 import com.bestcat.delivery.review.dto.ReviewResponseDto;
 import com.bestcat.delivery.review.dto.ReviewRequestDto;
 import com.bestcat.delivery.review.entity.Review;
@@ -8,6 +11,7 @@ import com.bestcat.delivery.review.entity.ReviewPhoto;
 import com.bestcat.delivery.review.repository.ReviewPhotoRepository;
 import com.bestcat.delivery.review.repository.ReviewRepository;
 import com.bestcat.delivery.user.entity.User;
+import com.bestcat.delivery.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,8 +32,8 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final ReviewPhotoRepository reviewPhotoRepository;
-//    private final UserRepository userRepository;
-//    private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
     private final FileUpload fileUpload;
 
@@ -64,7 +68,9 @@ public class ReviewService {
     public ResponseEntity<ReviewResponseDto> createReview(ReviewRequestDto requestDto, User user) {
         Review review = Review.builder()
                 .user(user)
-//                .order(orderRepository.findById(requestDto.orderId()))
+                .order(orderRepository.findById(requestDto.orderId()).orElseThrow( () ->
+                    new RestApiException(ErrorCode.ORDER_NOT_FOUND)
+                ))
                 .content(requestDto.content())
                 .rating(requestDto.rating())
                 .build();
@@ -81,12 +87,12 @@ public class ReviewService {
     @Transactional
     public ResponseEntity<ReviewResponseDto> updateReview(UUID id, ReviewRequestDto requestDto, UUID userId) {
 
-        if (requestDto.content().isEmpty()) throw new IllegalArgumentException("본문이 비어있습니다. 리뷰 내용을 입력해주세요.");
+        if (requestDto.content().isEmpty()) throw new RestApiException(ErrorCode.CONTENT_NOT_FOUND);
 
         Review review = reviewRepository.findById(id).orElseThrow(() ->
-                new NullPointerException("해당 리뷰를 찾을 수 없습니다."));
+                new RestApiException(ErrorCode.REVIEW_NOT_FOUND));
 
-        if ( !review.getUser().getId().equals(userId) ) throw new IllegalArgumentException("수정 권한이 없습니다.");
+        if ( !review.getUser().getId().equals(userId) ) throw new RestApiException(ErrorCode.INVALID_ROLE);
 
         review.update(requestDto);
         reviewRepository.save(review);
@@ -101,9 +107,9 @@ public class ReviewService {
     public ResponseEntity<ReviewResponseDto> deleteReview(UUID id, UUID userId) {
 
         Review review = reviewRepository.findById(id).orElseThrow(() ->
-                new NullPointerException("해당 리뷰를 찾을 수 없습니다."));
+                new RestApiException(ErrorCode.REVIEW_NOT_FOUND));
 
-        if( !review.getUser().getId().equals(userId) ) throw new IllegalArgumentException("삭제 권한이 없습니다.");
+        if( !review.getUser().getId().equals(userId) ) throw new RestApiException(ErrorCode.INVALID_ROLE);
 
         review.delete(id);
         reviewRepository.save(review);
@@ -116,7 +122,7 @@ public class ReviewService {
         try {
             photoUrls = fileUpload.uploadMultipleFile(photos);
         } catch (IOException e) {
-            throw new RuntimeException("파일 업로드 오류 발생");
+            throw new RestApiException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
         List<ReviewPhoto> photoList = photoUrls.stream()
