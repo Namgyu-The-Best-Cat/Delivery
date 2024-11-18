@@ -1,15 +1,15 @@
 package com.bestcat.delivery.user.dto;
 
-import com.bestcat.delivery.common.util.UserDetailsImpl;
+import com.bestcat.delivery.user.entity.User;
 
 public record UserInfoDto (
         String username,
         String email,
         String nickname
 ){
-    public UserInfoDto(UserDetailsImpl userDetails) {
-        this(userDetails.getUser().getUsername(),
-                userDetails.getUser().getEmail(),
-                userDetails.getUser().getNickname());
+    public UserInfoDto(User user) {
+        this(user.getUsername(),
+                user.getEmail(),
+                user.getNickname());
     }
 }

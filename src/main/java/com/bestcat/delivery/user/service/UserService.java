@@ -1,5 +1,15 @@
 package com.bestcat.delivery.user.service;
 
+import static com.bestcat.delivery.common.type.ErrorCode.AREA_NOT_FOUND;
+import static com.bestcat.delivery.common.type.ErrorCode.DELIVERY_ADDRESS_NOT_FOUND;
+import static com.bestcat.delivery.common.type.ErrorCode.USER_ID_MISMATCH;
+import static com.bestcat.delivery.common.type.ErrorCode.USER_NOT_FOUND;
+
+import com.bestcat.delivery.area.entity.Area;
+import com.bestcat.delivery.area.repository.AreaRepository;
+import com.bestcat.delivery.common.exception.RestApiException;
+import com.bestcat.delivery.user.dto.DeliveryAddressRequestDto;
+import com.bestcat.delivery.user.dto.DeliveryAddressResponseDto;
 import static com.bestcat.delivery.common.type.ErrorCode.ALREADY_EXIST_NICKNAME;
 import static com.bestcat.delivery.common.type.ErrorCode.NEW_PASSWORD_SAME_AS_CURRENT;
 import static com.bestcat.delivery.common.type.ErrorCode.PASSWORD_MISMATCH;
@@ -11,11 +21,15 @@ import com.bestcat.delivery.user.dto.NicknameRequestDto;
 import com.bestcat.delivery.user.dto.PasswordRequestDto;
 import com.bestcat.delivery.user.dto.SignupRequestDto;
 import com.bestcat.delivery.user.entity.RoleType;
+import com.bestcat.delivery.user.dto.UserInfoDto;
+import com.bestcat.delivery.user.entity.DeliveryAddress;
 import com.bestcat.delivery.user.entity.User;
+import com.bestcat.delivery.user.repository.DeliveryAddressRepository;
 import com.bestcat.delivery.user.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +40,8 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DeliveryAddressRepository deliveryAddressRepository;
+     private final AreaRepository areaRepository;
 
     public void signup(SignupRequestDto signupRequestDto) {
         User user = signupRequestDto.toEntity();
@@ -46,6 +62,37 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public UserInfoDto getUserInfo(User user) {
+        User getUser = userRepository.findByIdAndDeletedAtIsNull(user.getId()).orElseThrow(() -> new RestApiException(USER_NOT_FOUND));
+
+        return new UserInfoDto(getUser);
+    }
+
+    public DeliveryAddressResponseDto addDeliveryAddress(UUID userId, User user, DeliveryAddressRequestDto requestDto) {
+        if(!userId.equals(user.getId())) {
+            throw new RestApiException(USER_ID_MISMATCH);
+        }
+
+        Area area = areaRepository.findByCityAndAreaNameAndDeletedAtIsNull(requestDto.city(), requestDto.areaName()).orElseThrow(() ->
+                new RestApiException(AREA_NOT_FOUND));
+
+        DeliveryAddress deliveryAddress = deliveryAddressRepository.save(requestDto.toEntity(user, area));
+
+        return new DeliveryAddressResponseDto(deliveryAddress);
+    }
+
+    public DeliveryAddressResponseDto getDeliveryAddress(UUID userId, User user) {
+        if(!userId.equals(user.getId())) {
+            throw new RestApiException(USER_ID_MISMATCH);
+        }
+
+        DeliveryAddress deliveryAddress = deliveryAddressRepository.findByUserAndDeletedAtIsNull(user).orElseThrow(() ->
+                new RestApiException(DELIVERY_ADDRESS_NOT_FOUND));
+
+        return new DeliveryAddressResponseDto(deliveryAddress);
+    }
+
 
     public String updateNickname(UUID userId, User user, @Valid NicknameRequestDto requestDto) {
         validateUserIdIfNotAdminOrManager(userId, user);
@@ -76,6 +123,24 @@ public class UserService {
             cookie.setPath("/");
             response.addCookie(cookie);
         }
+    }
+
+    public DeliveryAddressResponseDto updateDeliveryAddress(UUID userId, User user, UUID deliveryId, DeliveryAddressRequestDto requestDto) {
+        if(!userId.equals(user.getId())) {
+            throw new RestApiException(USER_ID_MISMATCH);
+        }
+
+        DeliveryAddress deliveryAddress = deliveryAddressRepository.findById(deliveryId).orElseThrow(() ->
+                new RestApiException(DELIVERY_ADDRESS_NOT_FOUND));
+
+        Area area = areaRepository.findByCityAndAreaNameAndDeletedAtIsNull(requestDto.city(), requestDto.areaName()).orElseThrow(() ->
+                new RestApiException(AREA_NOT_FOUND));
+
+        deliveryAddress.updateToAreaAndDetailedAddress(area, requestDto.detailAddress());
+
+        deliveryAddress = deliveryAddressRepository.save(deliveryAddress);
+
+        return new DeliveryAddressResponseDto(deliveryAddress);
     }
 
     public void updatePassword(UUID userId, User user, PasswordRequestDto requestDto) {
