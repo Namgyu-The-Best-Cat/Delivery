@@ -22,14 +22,11 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,6 +59,8 @@ public class UserController {
         return ResponseEntity.ok(SuccessResponse.of(DELETE_USER_SUCCESS));
     }
 
+    @GetMapping
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_OWNER", "ROLE_CUSTOMER"})
     public ResponseEntity<SuccessResponse<UserInfoDto>> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok().body(
                 SuccessResponse.of(GET_USER_INFO_SUCCESS, userService.getUserInfo(userDetails.getUser())));
@@ -93,7 +92,6 @@ public class UserController {
                 NICKNAME_UPDATE_SUCCESS, userService.updateNickname(userId, userDetails.getUser(), nickname)
         ));
     }
-
 
     @PostMapping("/{userId}/delivery")
     @Secured({"ROLE_CUSTOMER"})
