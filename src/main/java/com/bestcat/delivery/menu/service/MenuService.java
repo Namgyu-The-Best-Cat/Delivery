@@ -28,7 +28,7 @@ public class MenuService {
 
     public ResponseEntity<List<MenuResponseDto>> getMenus(UUID storeId) {
 
-        List<Menu> menuList = menuRepository.findByStoreStoreIdAndDeleteAtIsNotNull(storeId);
+        List<Menu> menuList = menuRepository.findByStoreStoreIdAndDeletedAtIsNotNull(storeId);
 
         if (menuList == null || menuList.isEmpty()) throw new NullPointerException("메뉴가 존재하지 않습니다.");
 

@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, UUID> {
-    List<Menu> findByStoreStoreIdAndDeleteAtIsNotNull(UUID storeId);
+    List<Menu> findByStoreStoreIdAndDeletedAtIsNotNull(UUID storeId);
 }
