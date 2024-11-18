@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    @Query("select o from Order o join fetch o.user u where u.id = :userId")
+    @Query("select o from Order o join fetch o.orderItems i join o.user u where u.id = :userId")
     List<Order> findByUserId(@Param("userId") UUID userId);
 
     @Query("select o from Order o join o.store s where s.owner.id = :ownerId")
