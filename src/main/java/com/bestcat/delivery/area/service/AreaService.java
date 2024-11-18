@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +27,7 @@ public class AreaService {
     }
 
     public Page<AreaResponseDto> searchAreas(String city, UUID areaId, String areaName, Integer page, Integer size){
-        Pageable pageable = PageRequest.of(page, size);
-        System.out.println("Searching with parameters:");
-        System.out.println("city: " + city);
-        System.out.println("areaId: " + areaId);
-        System.out.println("areaName: " + areaName);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt")));
 
         Specification<Area> specification = createSpecification(city, areaId, areaName);
 

@@ -24,7 +24,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @Secured({"ROLE_MASTER"})
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     @PostMapping("/categories")
     public ResponseEntity<String> createCategory(@Valid @RequestBody CategoryRequestDto categoryRequestDto) {
         categoryService.save(categoryRequestDto);
@@ -33,6 +33,7 @@ public class CategoryController {
                 .body("Category가 추가되었습니다: " + categoryRequestDto);
     }
 
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_OWNER", "ROLE_CUSTOMER"})
     @GetMapping("/categories")
     public ResponseEntity<Page<CategoryResponseDto>> searchCategory(
             @RequestParam(required = false) String categoryName,
@@ -44,7 +45,7 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
-    @Secured({"ROLE_MASTER"})
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     @PutMapping("/categories/{categoryId}")
     public ResponseEntity<String> updateCategory(@PathVariable UUID categoryId,
                                                  @Valid @RequestBody CategoryRequestDto categoryRequestDto) {
@@ -54,7 +55,7 @@ public class CategoryController {
         return ResponseEntity.ok("Category가 성공적으로 업데이트되었습니다: " + categoryId);
     }
 
-    @Secured({"ROLE_MASTER"})
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER"})
     @DeleteMapping("/categories/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable UUID categoryId,
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {

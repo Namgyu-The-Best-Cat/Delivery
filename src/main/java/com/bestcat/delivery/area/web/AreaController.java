@@ -23,6 +23,7 @@ public class AreaController {
 
     private final AreaService areaService;
 
+    @Secured({"ROLE_MASTER", "ROLE_MANAGER", "ROLE_OWNER", "ROLE_CUSTOMER"})
     @GetMapping("/areas")
     public ResponseEntity<Page<AreaResponseDto>> searchAreas(
             @RequestParam(required = false) String city,
@@ -34,21 +35,21 @@ public class AreaController {
         return ResponseEntity.ok(areas);
     }
 
-    @Secured({"ROLE_MASTER"})
+    @Secured({"ROLE_MASTER","ROLE_MANAGER"})
     @PostMapping("/areas")
     public ResponseEntity<String> createArea(@Valid @RequestBody AreaRequestDto areaRequestDto) {
         areaService.save(areaRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Area가 추가되었습니다. "+areaRequestDto);
     }
 
-    @Secured({"ROLE_MASTER"})
+    @Secured({"ROLE_MASTER","ROLE_MANAGER"})
     @PutMapping("/areas/{areaId}")
     public ResponseEntity<String> updateArea(@PathVariable UUID areaId, @Valid @RequestBody AreaRequestDto areaRequestDto) {
         areaService.updateArea(areaId, areaRequestDto);
         return ResponseEntity.ok("Area가 업데이트되었습니다.");
     }
 
-    @Secured({"ROLE_MASTER"})
+    @Secured({"ROLE_MASTER","ROLE_MANAGER"})
     @DeleteMapping("/areas/{areaId}")
     public ResponseEntity<String> deleteArea(@PathVariable UUID areaId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         areaService.deleteArea(areaId,userDetails.getUserId());
