@@ -13,10 +13,6 @@ import com.bestcat.delivery.user.dto.DeliveryAddressResponseDto;
 import static com.bestcat.delivery.common.type.ErrorCode.ALREADY_EXIST_NICKNAME;
 import static com.bestcat.delivery.common.type.ErrorCode.NEW_PASSWORD_SAME_AS_CURRENT;
 import static com.bestcat.delivery.common.type.ErrorCode.PASSWORD_MISMATCH;
-import static com.bestcat.delivery.common.type.ErrorCode.USER_ID_MISMATCH;
-import static com.bestcat.delivery.common.type.ErrorCode.USER_NOT_FOUND;
-
-import com.bestcat.delivery.common.exception.RestApiException;
 import com.bestcat.delivery.user.dto.NicknameRequestDto;
 import com.bestcat.delivery.user.dto.PasswordRequestDto;
 import com.bestcat.delivery.user.dto.SignupRequestDto;
@@ -29,7 +25,6 @@ import com.bestcat.delivery.user.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.util.UUID;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
