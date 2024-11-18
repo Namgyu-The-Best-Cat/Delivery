@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
-    Page<Review> findAllByOrderStoreStoreIdAndDeleteAtIsNull(UUID storeId, Pageable pageable);
+    Page<Review> findAllByOrderStoreStoreIdAndDeletedAtIsNull(UUID storeId, Pageable pageable);
 
-    Page<Review> findAllByUserIdAndDeleteAtIsNull(UUID userId, Pageable pageable);
+    Page<Review> findAllByUserIdAndDeletedAtIsNull(UUID userId, Pageable pageable);
 }

@@ -3,14 +3,12 @@ package com.bestcat.delivery.review.web;
 import com.bestcat.delivery.common.util.UserDetailsImpl;
 import com.bestcat.delivery.review.dto.ReviewResponseDto;
 import com.bestcat.delivery.review.dto.ReviewRequestDto;
-import com.bestcat.delivery.review.service.ReviewPhotoService;
 import com.bestcat.delivery.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -20,7 +18,6 @@ import java.util.UUID;
 public class ReviewApiController {
 
     private final ReviewService reviewService;
-    private final ReviewPhotoService reviewPhotoService;
 
     @GetMapping("/stores/{storeId}/reviews")
     public ResponseEntity<Page<ReviewResponseDto>> getStoreReview(@PathVariable("storeId") String storeId,

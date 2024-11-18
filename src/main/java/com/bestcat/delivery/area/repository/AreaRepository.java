@@ -1,10 +1,11 @@
 package com.bestcat.delivery.area.repository;
 
 import com.bestcat.delivery.area.entity.Area;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface AreaRepository extends JpaRepository<Area, UUID> {
 
@@ -21,4 +22,6 @@ public interface AreaRepository extends JpaRepository<Area, UUID> {
     List<Area> findByAreaIdAndAreaName(UUID areaId, String areaName);
 
     List<Area> findByAreaName(String areaName);
+
+    Optional<Area> findByCityAndAreaNameAndDeletedAtIsNull(String city, String s);
 }

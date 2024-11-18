@@ -3,9 +3,9 @@ package com.bestcat.delivery.menu.entity;
 import com.bestcat.delivery.category.entity.Category;
 import com.bestcat.delivery.common.entity.BaseEntity;
 import com.bestcat.delivery.store.entity.Store;
-import com.bestcat.delivery.menu.dto.MenuRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +16,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Menu extends BaseEntity {
 
     @Id
@@ -30,7 +31,6 @@ public class Menu extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-
     private String name;
 
     private Integer price;
@@ -39,7 +39,11 @@ public class Menu extends BaseEntity {
 
     private String description;
 
-    public void update(MenuRequestDto requestDto){
-
+    public void update(Category category, String name, int price, String photoUrl, String description) {
+        this.category = category;
+        this.name = name;
+        this.price = price;
+        this.photoUrl = photoUrl;
+        this.description = description;
     }
 }

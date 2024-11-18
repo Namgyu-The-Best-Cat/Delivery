@@ -33,4 +33,11 @@ public record SuccessResponse<T>(
                 .data(data)
                 .build();
     }
+
+    public static <T> SuccessResponse<T> of(String code, ResponseMessage message) {
+        return SuccessResponse.<T>builder()
+                .code(code)
+                .message(message.getMessage())
+                .build();
+    }
 }
