@@ -38,3 +38,8 @@ out/
 
 ### MAC ###
 .DS_store
+
+application.yml
+
+$buildDir/
+src/main/generated/
