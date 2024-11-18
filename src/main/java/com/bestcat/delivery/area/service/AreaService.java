@@ -7,8 +7,10 @@ import com.bestcat.delivery.area.repository.AreaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,37 +26,50 @@ public class AreaService {
         this.areaRepository = areaRepository;
     }
 
-    public List<AreaResponseDto> searchAreas(String city, UUID areaId, String areaName, Integer page, Integer size) {
-        List<Area> areas;
+    public Page<AreaResponseDto> searchAreas(String city, UUID areaId, String areaName, Integer page, Integer size){
+        Pageable pageable = PageRequest.of(page, size);
 
-        if (city != null && areaId != null && areaName != null) {
-            areas = areaRepository.findByCityAndAreaIdAndAreaName(city, areaId, areaName);
-        } else if (city != null && areaId != null) {
-            areas = areaRepository.findByCityAndAreaId(city, areaId);
-        } else if (city != null && areaName != null) {
-            areas = areaRepository.findByCityAndAreaName(city, areaName);
-        } else if (areaId != null && areaName != null) {
-            areas = areaRepository.findByAreaIdAndAreaName(areaId, areaName);
-        } else if (city != null) {
-            areas = areaRepository.findByCity(city);
-        } else if (areaId != null) {
-            Optional<Area> areaOptional = areaRepository.findById(areaId);
-            areas = areaOptional.map(Collections::singletonList)
-                    .orElseGet(() -> {
-                        Pageable pageable = PageRequest.of(page, size);
-                        return areaRepository.findAll(pageable).getContent();
-                    });
+        Specification<Area> specification = createSpecification(city, areaId, areaName);
+        return areaRepository.findAll(specification, pageable)
+                .map(AreaResponseDto::fromArea);
+    }
 
-        } else if (areaName != null) {
-            areas = areaRepository.findByAreaName(areaName);
-        } else {
-            Pageable pageable = PageRequest.of(page,size);
-            areas = areaRepository.findAll(pageable).getContent();
+    private Specification<Area> createSpecification(String city, UUID areaId, String areaName) {
+
+        Specification<Area> spec = Specification.where(isNotDeleted());
+
+        if (city != null && !city.isEmpty()) {
+            spec = spec.and(cityEquals(city));
+        }
+        if (areaId != null) {
+            spec = spec.and(areaIdEquals(areaId));
+        }
+        if (areaName != null && !areaName.isEmpty()) {
+            spec = spec.and(areaNameLike(areaName));
         }
 
-        return areas.stream()
-                .map(AreaResponseDto::from)
-                .collect(Collectors.toList());
+        return spec;
+    }
+    // deletedAt이 null
+    private Specification<Area> isNotDeleted() {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.isNull(root.get("deletedAt"));
+    }
+
+    // city 일치
+    private Specification<Area> cityEquals(String city) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("city"), city);
+    }
+
+    // areaId 일치
+    private Specification<Area> areaIdEquals(UUID areaId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("areaId"), areaId);
+    }
+
+    // areaName 포함
+    private Specification<Area> areaNameLike(String areaName) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.like(root.get("name"), "%" + areaName + "%");
     }
 
     public void save(AreaRequestDto requestDto) {
@@ -71,6 +86,9 @@ public class AreaService {
 
 
     public void deleteArea(UUID areaId) {
-        areaRepository.deleteByAreaId(areaId);
+        Area area = areaRepository.findById(areaId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 area가 없습니다."));
+
+        area.delete(areaId);
     }
 }
