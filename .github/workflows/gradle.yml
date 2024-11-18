@@ -1,0 +1,96 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Set Yaml
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: ./src/main/resources/application.yml 
+      env:
+        spring.datasource.url: jdbc:postgresql://${{ secrets.DB_URL }} 
+        spring.datasource.username: ${{ secrets.DB_USERNAME }} 
+        spring.datasource.password: ${{ secrets.DB_PASSWORD }}
+        jwt.secret.key: ${{secrets.JWT_SECRET_KEY}}
+        cloud.aws.s3.bucket: ${{secrets.S3_BUCKET}}
+        cloud.aws.credentials.access-key: ${{secrets.S3_ACCESS_KEY}}
+        cloud.aws.credentials.secret-key: ${{secrets.S3_SECRET_KEY}}
+        gemini.key: ${{secrets.GEMINI_KEY}}
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x ./gradlew
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      
+    - name: Build with Gradle
+      run: ./gradlew clean build -x test
+
+    - name: Build Docker image
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/theBestCat-Delivery:latest .
+
+    - name: Docker login
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Docker Hub push
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/theBestCat-Delivery:latest
+        
+    # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
+    # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
+    #
+    # - name: Setup Gradle
+    #   uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+    #   with:
+    #     gradle-version: '8.9'
+    #
+    # - name: Build with Gradle 8.9
+    #   run: gradle build
+    
+  run-docker-image-on-ec2:
+    needs: build
+    runs-on: ubuntu-latest
+    # runs-on: self-hosted
+    
+    steps:
+      - name: execute remote ssh & docker stop and run
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_SSH_HOST }}
+          username: ${{ secrets.REMOTE_SSH_NAME }}
+          password: ${{ secrets.REMOTE_SSH_PWD }}
+          key: ${{ secrets.REMOTE_SSH_KEY }}
+          port: ${{ secrets.REMOTE_SSH_PORT }}
+          script: |
+            whoami
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/theBestCat-Delivery:latest
+            sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
+            sudo docker run -e TZ=Asia/Seoul -it --name theBestCat-Delivery --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/theBestCat-Delivery:latest
+            sudo docker system prune -f
