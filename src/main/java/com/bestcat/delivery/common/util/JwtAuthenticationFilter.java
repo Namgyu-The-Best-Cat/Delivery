@@ -1,7 +1,9 @@
 package com.bestcat.delivery.common.util;
 
-import static com.bestcat.delivery.common.type.ResponseMessage.SIGNIN_SUCCESS;
+import static com.bestcat.delivery.common.type.ErrorCode.SIGN_IN_FAILED;
+import static com.bestcat.delivery.common.type.ResponseMessage.SIGN_IN_SUCCESS;
 
+import com.bestcat.delivery.common.dto.ErrorResponse;
 import com.bestcat.delivery.common.dto.SuccessResponse;
 import com.bestcat.delivery.common.type.ResponseMessage;
 import com.bestcat.delivery.user.dto.SigninRequestDto;
@@ -57,7 +59,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String token = jwtUtil.createToken(id, username, role);
         jwtUtil.addJwtToCookie(token, response);
         // 로그인 성공 메시지 작성
-        SuccessResponse<ResponseMessage> successResponse = SuccessResponse.of(SIGNIN_SUCCESS);
+        SuccessResponse<ResponseMessage> successResponse = SuccessResponse.of(SIGN_IN_SUCCESS);
 
         // JSON 응답을 반환
         response.setContentType("application/json");
@@ -70,5 +72,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         log.info("로그인 실패");
         response.setStatus(401);
+
+        // 로그인 실패 메시지 작성
+        ErrorResponse errorResponse = ErrorResponse.builder().code("UnAuthorized").message(SIGN_IN_FAILED.getDescription()).build();
+        // JSON 응답을 반환
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+        response.getWriter().flush();
     }
 }

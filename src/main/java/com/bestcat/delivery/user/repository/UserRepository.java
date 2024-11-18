@@ -10,6 +10,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByUsernameAndDeletedAtIsNull(String username);
 
+    Optional<User> findByUsernameAndDeletedAtIsNull(String username);
+
     boolean existsByNicknameAndDeletedAtIsNull(String nickname);
 
     Optional<User> findByUsername(String username);
