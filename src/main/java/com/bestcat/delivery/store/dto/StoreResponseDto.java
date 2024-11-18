@@ -26,7 +26,8 @@ public record StoreResponseDto(
                 .toList();
         double stars;
         if(store.getTotalReviews() != 0) {
-             stars = store.getTotalStars() / store.getTotalReviews();
+           stars = (double) store.getTotalStars() / store.getTotalReviews();
+        }
         }else{
             stars =0;
         }
