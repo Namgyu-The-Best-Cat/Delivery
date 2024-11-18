@@ -7,6 +7,7 @@ import com.bestcat.delivery.area.service.AreaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,16 +32,19 @@ public class AreaController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PostMapping("/areas")
     public void createArea(@Valid @RequestBody AreaRequestDto areaRequestDto) {
         areaService.save(areaRequestDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @PutMapping("/areas/{areaId}")
     public void updateArea(@PathVariable UUID areaId, @Valid @RequestBody AreaRequestDto areaRequestDto) {
         areaService.updateArea(areaId, areaRequestDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @DeleteMapping("/areas/{areaId}")
     public void deleteArea(@PathVariable UUID areaId) {
         areaService.deleteArea(areaId);
