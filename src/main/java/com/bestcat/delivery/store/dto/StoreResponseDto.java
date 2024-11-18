@@ -16,6 +16,7 @@ public record StoreResponseDto(
         String addressDetail,
         Integer totalReviews,
         Integer totalStars,
+        double stars,
         List<String> categoryNames
 ){
     public static StoreResponseDto fromStore(Store store) {
@@ -23,7 +24,12 @@ public record StoreResponseDto(
         List<String> categoryNames = store.getStoreCategories().stream()
                 .map(storeCategory -> storeCategory.getCategory().getCategoryName())
                 .toList();
-
+        double stars;
+        if(store.getTotalReviews() != 0) {
+             stars = store.getTotalStars() / store.getTotalReviews();
+        }else{
+            stars =0;
+        }
         return new StoreResponseDto(
                 store.getStoreId(),
                 store.getStoreName(),
@@ -35,6 +41,7 @@ public record StoreResponseDto(
                 store.getAddressDetail(),
                 store.getTotalReviews(),
                 store.getTotalStars(),
+                stars,
                 categoryNames
         );
     }
