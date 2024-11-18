@@ -21,10 +21,13 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
     PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     INVALID_ROLE(HttpStatus.NOT_FOUND, "유효한 권한이 아닙니다."),
+    SIGN_IN_FAILED(HttpStatus.UNAUTHORIZED, "로그인에 실패했습니다"),
+    NEW_PASSWORD_SAME_AS_CURRENT(HttpStatus.BAD_REQUEST, "현재 사용중인 비밀번호와 일치합니다."),
+    CANNOT_FOUND_LOGIN_USER(HttpStatus.UNAUTHORIZED, "현재 로그인 된 유저가 없습니다."),
 
 
     // area
-    SERVICE_AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 지역입니다."),
+    AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "등록되지 않은 지역입니다."),
 
 
     // delivery
