@@ -4,9 +4,9 @@ import com.bestcat.delivery.area.dto.AreaRequestDto;
 import com.bestcat.delivery.area.dto.AreaResponseDto;
 import com.bestcat.delivery.area.entity.Area;
 import com.bestcat.delivery.area.repository.AreaRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.bestcat.delivery.common.util.UserDetailsImpl;
+import com.bestcat.delivery.user.entity.User;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class AreaService {
@@ -28,8 +27,13 @@ public class AreaService {
 
     public Page<AreaResponseDto> searchAreas(String city, UUID areaId, String areaName, Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size);
+        System.out.println("Searching with parameters:");
+        System.out.println("city: " + city);
+        System.out.println("areaId: " + areaId);
+        System.out.println("areaName: " + areaName);
 
         Specification<Area> specification = createSpecification(city, areaId, areaName);
+
         return areaRepository.findAll(specification, pageable)
                 .map(AreaResponseDto::fromArea);
     }
@@ -69,7 +73,7 @@ public class AreaService {
     // areaName 포함
     private Specification<Area> areaNameLike(String areaName) {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.like(root.get("name"), "%" + areaName + "%");
+                criteriaBuilder.like(root.get("areaName"), "%" + areaName + "%");
     }
 
     public void save(AreaRequestDto requestDto) {
@@ -85,10 +89,11 @@ public class AreaService {
     }
 
 
-    public void deleteArea(UUID areaId) {
+    @Transactional
+    public void deleteArea(UUID areaId, UUID userId) {
         Area area = areaRepository.findById(areaId)
                 .orElseThrow(() -> new IllegalArgumentException("해당하는 area가 없습니다."));
 
-        area.delete(areaId);
+        area.delete(userId);
     }
 }

@@ -2,6 +2,7 @@ package com.bestcat.delivery.area.web;
 import com.bestcat.delivery.area.dto.AreaRequestDto;
 import com.bestcat.delivery.area.dto.AreaResponseDto;
 import com.bestcat.delivery.area.service.AreaService;
+import com.bestcat.delivery.common.util.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,13 +24,13 @@ public class AreaController {
     private final AreaService areaService;
 
     @GetMapping("/areas")
-    public ResponseEntity<Page<AreaResponseDto>> searchAreasByCity(
+    public ResponseEntity<Page<AreaResponseDto>> searchAreas(
             @RequestParam(required = false) String city,
-            @RequestParam(required = false) UUID areaID,
+            @RequestParam(required = false) UUID areaId,
             @RequestParam(required = false) String areaName,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
-        Page<AreaResponseDto> areas = areaService.searchAreas(city, areaID, areaName, page, size);
+        Page<AreaResponseDto> areas = areaService.searchAreas(city, areaId, areaName, page, size);
         return ResponseEntity.ok(areas);
     }
 
@@ -48,8 +50,8 @@ public class AreaController {
 
     @Secured({"ROLE_MASTER"})
     @DeleteMapping("/areas/{areaId}")
-    public ResponseEntity<String> deleteArea(@PathVariable UUID areaId) {
-        areaService.deleteArea(areaId);
+    public ResponseEntity<String> deleteArea(@PathVariable UUID areaId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        areaService.deleteArea(areaId,userDetails.getUserId());
         return ResponseEntity.ok("Area가 삭제되었습니다.");
     }
 
